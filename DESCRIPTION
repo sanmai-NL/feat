@@ -1,0 +1,30 @@
+Authors@R: person("Sander", "Maijers", email = "S.N.Maijers+R-feat@gmail.com", role = c("aut", "cre"))
+BugReports: https://github.com/sanmai-NL/feat/issues
+Depends:
+    R (>= 3.2.1),
+    R (< 4.0.0),
+    data.table (>= 1.9.6),
+    data.table (< 2.0.0),
+    dplyr (>= 0.4.3),
+    dplyr (< 1.0.0),
+    digest (< 0.7.0),
+    digest (>= 0.6.8),
+    xml2 (< 2.0.0),
+    xml2 (>= 0.1.2),
+    Rcpp (>= 0.12.1),
+    Rcpp (<= 1.0.0)
+Description: An R package that converts a parsed Dutch text document collection
+ to a (sparse) design matrix with variables for each observed flat-sequential
+  (word n-grams) and structural (parse graph trail n-grams) feature, using
+  SRILM and custom code. Currently only the Alpino XML parse format is
+  implemented, limiting applicability to documents in Dutch.
+LazyData: true
+License: custom
+LinkingTo: Rcpp
+Package: feat
+Suggests:
+    testthat
+Title: Parsed Documents as Long Sparse Linguistic Feature Vectors
+URL: https://github.com/sanmai-NL/feat
+Version: 0.1.0
+RoxygenNote: 5.0.1

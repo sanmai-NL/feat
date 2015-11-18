@@ -1,0 +1,34 @@
+= `feat`
+:icons: font
+:toc: right
+:toclevels: 4
+:sectnums:
+:source-highlighter: pygments
+
+An R package that converts a parsed Dutch text document collection to a (sparse) design matrix with variables for each observed flat-sequential (word n-grams) and structural (parse graph trail n-grams) feature, using SRILM and custom code. Currently only the Alpino XML parse format is implemented, limiting applicability to documents in Dutch.
+
+= Requirements
+
+* A UNIX-like operating system.
+** `cat`
+** `awk`
+* http://www.speech.sri.com/projects/srilm/[SRILM] (at least `ngram` and `ngram-count`)
+
+= To install
+
+[source,R]
+----
+install_github('sanmai-NL/feat')
+----
+
+= To configure
+
+Set the `mc.cores` option appropriately to enable or disable parallel processing.
+[source,R]
+----
+options(mc.cores=3L)
+----
+
+= To run
+
+(Forthcoming.)
