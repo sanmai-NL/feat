@@ -74,12 +74,12 @@ SRILM_write_ARPA_language_model <- function(COUNTS_FILE_PATH_STR=NULL, LANGUAGE_
     return(COUNTS_AND_LM)
 }
 
-SRILM_write_perplexity_mats <- function(COUNTS_AND_LM=NULL, SEQUENCES_FILE_PATH_STR=base::paste0(COUNTS_AND_LM@COUNTS_FILE_PATH_STR, '.seq'), SEQUENCES_PERPLEXITIES_DVEC_FILE_PATH_STR=base::paste0(SEQUENCES_FILE_PATH_STR, '_ppl.rds'), SEED_I=NULL) {
-    check_args(fun=SRILM_write_perplexity_mats)
+SRILM_write_feature_scores <- function(COUNTS_AND_LM=NULL, SEQUENCES_FILE_PATH_STR=base::paste0(COUNTS_AND_LM@COUNTS_FILE_PATH_STR, '.seq'), SEQUENCES_PERPLEXITIES_DVEC_FILE_PATH_STR=base::paste0(SEQUENCES_FILE_PATH_STR, '_ppl.rds'), SEED_I=NULL) {
+    check_args(fun=SRILM_write_feature_scores)
 
     base::message(
         base::sprintf(
-            "Writing perplexities data_frame to \n'%s'\n using 'ngram' on the counts file \n'%s'\n transformed to sequences file \n'%s'\n and language model file \n'%s'\n ...",
+            "Writing feature scores to \n'%s'\n using 'ngram' on the counts file \n'%s'\n transformed to sequences file \n'%s'\n and language model file \n'%s'\n ...",
             SEQUENCES_PERPLEXITIES_DVEC_FILE_PATH_STR,
             COUNTS_AND_LM@COUNTS_FILE_PATH_STR,
             SEQUENCES_FILE_PATH_STR,
@@ -117,7 +117,7 @@ SRILM_write_perplexity_mats <- function(COUNTS_AND_LM=NULL, SEQUENCES_FILE_PATH_
             error=base::stop,
             warning=base::stop)
 
-    ## Take reciprocal perplexity so that 0 scores indicate feature absence.
+    ## Take reciprocal of perplexity so that 0 scores indicate feature absence.
     perplexities_rex_dvec <-
         base::t(
             1.0 / base::as.numeric(

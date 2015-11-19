@@ -68,7 +68,7 @@ docs_process_segment <- function(CURRENT_SEGMENT_TYPE=NULL, DOCUMENT_SENTENCE_RO
             SEGMENT_TYPE=CURRENT_SEGMENT_TYPE,
             SRILM_PARAMETERS=FLATSEQ_SRILM_PARAMETERS)
     FLATSEQ_SEQUENCES_AND_PERPLEXITIES <-
-        SRILM_write_perplexity_mats(
+        SRILM_write_feature_scores(
             COUNTS_AND_LM=FLATSEQ_COUNTS_AND_LM,
             SEED_I=SEED_I)
 
@@ -81,7 +81,7 @@ docs_process_segment <- function(CURRENT_SEGMENT_TYPE=NULL, DOCUMENT_SENTENCE_RO
             SRILM_PARAMETERS=STRCT_SRILM_PARAMETERS,
             N=STRCT_N)
     STRCT_SEQUENCES_AND_PERPLEXITIES <-
-        SRILM_write_perplexity_mats(
+        SRILM_write_feature_scores(
             COUNTS_AND_LM=STRCT_COUNTS_AND_LM,
             SEED_I=SEED_I)
 
