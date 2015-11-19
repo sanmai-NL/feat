@@ -18,7 +18,9 @@ An R package that converts a parsed Dutch text document collection to a (sparse)
 
 [source,R]
 ----
-install_github('sanmai-NL/feat')
+install.packages('devtools')
+library('devtools')
+devtools::install_github('sanmai-NL/feat')
 ----
 
 = To configure
