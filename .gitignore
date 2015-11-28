@@ -12,3 +12,8 @@
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
+
+# C++ artifacts
+*.o
+*.a
+*.so
