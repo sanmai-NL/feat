@@ -3,19 +3,28 @@
 #' @name feat-input
 NULL
 
-ANNOTATION_DT_COLUMN_CLASSES <-
+# TODO: use single named list for both below
+ANNOTATION_DT_COLUMN_CLASSES_LST <-
     base::c(
         base::character(),
         base::character(),
         base::integer(),
         base::character(),
-        NULL)
+        base::character(),
+        base::character())
+ANNOTATION_DT_COLUMN_NAMES_CVEC <-
+    base::c(
+        'SHA256_value',
+        'document_name',
+        'sentence_ID',
+        'segment_type',
+        'conclusion_type',
+        'comments')
 
-ARC_CATEGORIES_DT_COLUMN_CLASSES <-
+ARC_CATEGORIES_DT_COLUMN_CLASSES_LST <-
     base::c(
         base::character(),
         base::character())
-
 ARC_CATEGORY_FILE_NAME_REX_STR <-
     '^arcs_categories_(\\w+).tsv$'
 
@@ -36,12 +45,12 @@ input_calculate_hash_values <- function(FILES_PATHS_CVEC=NULL)
         USE.NAMES=FALSE)
 
 #' @export
-input_write_annotation_table_template <- function(DOCUMENTS_DIRS_PATH_STR=NULL, OUTPUT_DIR_PATH_STR=NULL, ANNOTATION_TABLE_FILE_PATH_STR=base::file.path(output_dir_path_str, 'annotation_table.tsv')) {
+input_write_annotation_table_template <- function(DOCUMENTS_DIR_PATH_STR=NULL, OUTPUT_DIR_PATH_STR=NULL, ANNOTATION_TABLE_FILE_PATH_STR=base::file.path(output_dir_path_str, 'annotation_table.tsv')) {
     check_args(fun=input_write_annotation_table_template)
 
     base::message(
         base::sprintf(
-            "Writing annotation table template to '%s' ...",
+            "Writing annotation table template to '%s' ... ",
             ANNOTATION_TABLE_FILE_PATH_STR))
 
     SENTENCE_FILES_PATHS_CVEC <-
@@ -49,7 +58,7 @@ input_write_annotation_table_template <- function(DOCUMENTS_DIRS_PATH_STR=NULL, 
             all.files=FALSE,
             full.names=TRUE,
             no..=TRUE,
-            path=DOCUMENTS_DIRS_PATH_STR,
+            path=DOCUMENTS_DIR_PATH_STR,
             pattern='\\d+\\.xml$',
             recursive=TRUE)
 
@@ -74,7 +83,14 @@ input_write_annotation_table_template <- function(DOCUMENTS_DIRS_PATH_STR=NULL, 
             SHA256_value=SHA256_VALUES_CVEC,
             document_name=DOCUMENT_DIR_NAMES_CVEC,
             sentence_ID=SENTENCE_IDS_IVEC,
-            segment_type=NA_integer_)
+            segment_type=NA_character_,
+            conclusion_type=NA_character_,
+            comments=NA_character_)
+    if (!base::identical(
+            base::colnames(annotation_dt),
+            ANNOTATION_DT_COLUMN_NAMES_CVEC)) {
+       base::stop('The column names used annotation table template are inconsistent with the predefined column names. ')
+    }
 
     data.table::setorder(
         annotation_dt,
@@ -89,7 +105,7 @@ input_write_annotation_table_template <- function(DOCUMENTS_DIRS_PATH_STR=NULL, 
         col.names=TRUE,
         fileEncoding='UTF-8')
 
-    return(ANNOTATION_TABLE_FILE_PATH_STR)
+    return()
 }
 
 input_verify_annotation_table_consistency <- function(SENTENCE_FILES_PATHS_CVEC=NULL, ANNOTATION_DT=NULL, SEGMENT_TYPES_CVEC=NULL) {
@@ -101,7 +117,7 @@ input_verify_annotation_table_consistency <- function(SENTENCE_FILES_PATHS_CVEC=
             SEGMENT_TYPES_CVEC))
             base::stop(
                 base::sprintf(
-                    'The annotation table contains segment_type levels {%s}, but you specified a different SEGMENT_TYPES_CVEC {%s}.',
+                    'The annotation table contains segment_type levels {%s}, but you specified a different SEGMENT_TYPES_CVEC {%s}. ',
                     base::paste0(
                         base::levels(
                             ANNOTATION_DT[['segment_type']]),
@@ -134,6 +150,8 @@ input_read_annotation_table <- function(ANNOTATION_TABLE_FILE_PATH_STR=NULL, DOC
         base::sprintf(
             "Reading annotation table at '%s' ... ",
             ANNOTATION_TABLE_FILE_PATH_STR))
+    RELEVANTCOL_NAMES_BVEC <-
+        ANNOTATION_DT_COLUMN_NAMES_CVEC != 'comments'
 
     annotation_dt <-
         data.table::fread(
@@ -141,8 +159,9 @@ input_read_annotation_table <- function(ANNOTATION_TABLE_FILE_PATH_STR=NULL, DOC
             header=TRUE,
             sep='\t',
             encoding='UTF-8',
-            drop='comments',
-            colClasses=ANNOTATION_DT_COLUMN_CLASSES,
+            col.names=ANNOTATION_DT_COLUMN_NAMES_CVEC[RELEVANTCOL_NAMES_BVEC],
+            select=ANNOTATION_DT_COLUMN_NAMES_CVEC[RELEVANTCOL_NAMES_BVEC],
+            colClasses=ANNOTATION_DT_COLUMN_CLASSES_LST,
             stringsAsFactors=TRUE)
 
     SENTENCE_FILES_PATHS_CVEC <-
@@ -154,9 +173,9 @@ input_read_annotation_table <- function(ANNOTATION_TABLE_FILE_PATH_STR=NULL, DOC
                 annotation_dt[['sentence_ID']]))
 
     data.table::setkey(
-    	annotation_dt,
-    	document_name,
-    	sentence_ID)
+        annotation_dt,
+        document_name,
+        sentence_ID)
 
     input_verify_annotation_table_consistency(
         SENTENCE_FILES_PATHS_CVEC=SENTENCE_FILES_PATHS_CVEC,
@@ -180,7 +199,7 @@ input_read_arc_categories_table <- function(ARC_CATEGORIES_FILE_PATH_STR=NULL) {
             header=TRUE,
             sep='\t',
             encoding='UTF-8',
-            colClasses=ARC_CATEGORIES_DT_COLUMN_CLASSES,
+            colClasses=ARC_CATEGORIES_DT_COLUMN_CLASSES_LST,
             stringsAsFactors=TRUE)
 
     return(base::list(ARC_CATEGORY_DT))
