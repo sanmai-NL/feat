@@ -34,6 +34,9 @@ docs_parse_Alpino_XML <- function(ALPINO_XML_FILE_PATH_STR=NULL) {
 
 docs_process_segment <- function(CURRENT_SEGMENT_TYPE=NULL, DOCUMENT_SENTENCE_ROWS_DT=NULL, DOCUMENT_DIR_PATH_STR=NULL, ARC_CATEGORIES=NULL, FLATSEQ_SRILM_PARAMETERS=NULL, STRCT_SRILM_PARAMETERS=NULL, STRCT_N=NULL, SEED_I=NULL) {
     check_args(fun=docs_process_segment)
+    if (base::is.na(STRCT_SRILM_PARAMETERS) && base::is.na(FLATSEQ_SRILM_PARAMETERS)) {
+        base::stop('FLATSEQ_SRILM_PARAMETERS and STRCT_SRILM_PARAMETERS may not both be NA. ')
+    }
 
     base::message(
         base::sprintf(
@@ -61,49 +64,63 @@ docs_process_segment <- function(CURRENT_SEGMENT_TYPE=NULL, DOCUMENT_SENTENCE_RO
             FUN.VALUE=TEMPLATES_1_LST,
             USE.NAMES=FALSE)
 
-    FLATSEQ_COUNTS_AND_LM <-
-        flatseq_extract(
-            OUTPUT_DIR_PATH_STR=DOCUMENT_DIR_PATH_STR,
-            ALPINO_XML_DOC_LST=ALPINO_XML_DOC_LST,
-            SEGMENT_TYPE=CURRENT_SEGMENT_TYPE,
-            SRILM_PARAMETERS=FLATSEQ_SRILM_PARAMETERS)
-    FLATSEQ_SEQUENCES_AND_PERPLEXITIES <-
-        SRILM_write_feature_scores(
-            COUNTS_AND_LM=FLATSEQ_COUNTS_AND_LM,
-            SEED_I=SEED_I)
+    if (!base::anyNA(FLATSEQ_SRILM_PARAMETERS)) {
+        FLATSEQ_COUNTS_AND_LM <-
+            flatseq_extract(
+                OUTPUT_DIR_PATH_STR=DOCUMENT_DIR_PATH_STR,
+                ALPINO_XML_DOC_LST=ALPINO_XML_DOC_LST,
+                SEGMENT_TYPE=CURRENT_SEGMENT_TYPE,
+                SRILM_PARAMETERS=FLATSEQ_SRILM_PARAMETERS)
 
-    STRCT_COUNTS_AND_LM <-
-        strct_extract(
-            OUTPUT_DIR_PATH_STR=DOCUMENT_DIR_PATH_STR,
-            ALPINO_XML_DOC_LST=ALPINO_XML_DOC_LST,
-            SEGMENT_TYPE=CURRENT_SEGMENT_TYPE,
-            ARC_CATEGORIES=ARC_CATEGORIES,
-            SRILM_PARAMETERS=STRCT_SRILM_PARAMETERS,
-            N=STRCT_N)
-    STRCT_SEQUENCES_AND_PERPLEXITIES <-
-        SRILM_write_feature_scores(
-            COUNTS_AND_LM=STRCT_COUNTS_AND_LM,
-            SEED_I=SEED_I)
+        FLATSEQ_SEQUENCES_AND_PERPLEXITIES <-
+            SRILM_write_feature_scores(
+                COUNTS_AND_LM=FLATSEQ_COUNTS_AND_LM,
+                SEED_I=SEED_I)
 
-    FLATSEQ_SEGMENT_FEATURE_SET <-
-        methods::new(
-            'ObjectFeatureSet',
-            COUNTS_AND_LM=FLATSEQ_COUNTS_AND_LM,
-            SEQUENCES_AND_PERPLEXITIES=FLATSEQ_SEQUENCES_AND_PERPLEXITIES)
+        FLATSEQ_SEGMENT_FEATURE_SET <-
+            methods::new(
+                'ObjectFeatureSet',
+                COUNTS_AND_LM=FLATSEQ_COUNTS_AND_LM,
+                SEQUENCES_AND_PERPLEXITIES=FLATSEQ_SEQUENCES_AND_PERPLEXITIES)
+    }
 
-    STRCT_SEGMENT_FEATURE_SET <-
-        methods::new(
-            'ObjectFeatureSet',
-            COUNTS_AND_LM=STRCT_COUNTS_AND_LM,
-            SEQUENCES_AND_PERPLEXITIES=STRCT_SEQUENCES_AND_PERPLEXITIES)
+    if (!base::anyNA(STRCT_SRILM_PARAMETERS)) {
+        STRCT_COUNTS_AND_LM <-
+            strct_extract(
+                OUTPUT_DIR_PATH_STR=DOCUMENT_DIR_PATH_STR,
+                ALPINO_XML_DOC_LST=ALPINO_XML_DOC_LST,
+                SEGMENT_TYPE=CURRENT_SEGMENT_TYPE,
+                ARC_CATEGORIES=ARC_CATEGORIES,
+                SRILM_PARAMETERS=STRCT_SRILM_PARAMETERS,
+                N=STRCT_N)
 
-    SEGMENT_FEATURE_SETS <-
-        methods::new(
-            'ObjectFeatureSets',
-            FLATSEQ=FLATSEQ_SEGMENT_FEATURE_SET,
-            STRCT=STRCT_SEGMENT_FEATURE_SET)
+        STRCT_SEQUENCES_AND_PERPLEXITIES <-
+            SRILM_write_feature_scores(
+                COUNTS_AND_LM=STRCT_COUNTS_AND_LM,
+                SEED_I=SEED_I)
 
-    return(base::list(SEGMENT_FEATURE_SETS))
+        STRCT_SEGMENT_FEATURE_SET <-
+            methods::new(
+                'ObjectFeatureSet',
+                COUNTS_AND_LM=STRCT_COUNTS_AND_LM,
+                SEQUENCES_AND_PERPLEXITIES=STRCT_SEQUENCES_AND_PERPLEXITIES)
+        SEGMENT_FEATURE_SETS <-
+            base::list(STRCT_SEGMENT_FEATURE_SET)
+    }
+
+    if (base::anyNA(STRCT_SRILM_PARAMETERS)) {
+        return(base::list(FLATSEQ_SEGMENT_FEATURE_SET))
+    } else if (base::anyNA(FLATSEQ_SRILM_PARAMETERS)) {
+        return(base::list(STRCT_SEGMENT_FEATURE_SET))
+    } else {
+        SEGMENT_FEATURE_SETS <-
+            methods::new(
+                'ObjectFeatureSets',
+                FLATSEQ=FLATSEQ_SEGMENT_FEATURE_SET,
+                STRCT=STRCT_SEGMENT_FEATURE_SET)
+
+        return(base::list(SEGMENT_FEATURE_SETS))
+    }
 }
 
 docs_process_document <- function(DOCUMENT_NAME=NULL, DOCUMENT_DIR_PATHS_CVEC=NULL, DOCUMENT_DIR_PATH_STR=DOCUMENT_DIR_PATHS_CVEC[DOCUMENT_NAME], ANNOTATION_DT=NULL, ARC_CATEGORIES=NULL, EXTRACTABLE_SEGMENT_TYPES_CVEC=NULL, FLATSEQ_SRILM_PARAMETERS=NULL, STRCT_SRILM_PARAMETERS=NULL, STRCT_N=NULL, SEED_I=NULL) {
