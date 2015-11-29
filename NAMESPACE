@@ -2,9 +2,10 @@
 
 export(docs_parse_Alpino_XML)
 export(docs_process_collection)
-export(docs_produce_design_matrix_d_f)
 export(input_read_annotation_table)
 export(input_read_arc_categories_tables)
 export(input_write_annotation_table_template)
+export(preanalysis_extract_feature_names_and_scores_file_paths)
+export(preanalysis_produce_design_mat)
 importFrom(Rcpp,evalCpp)
 useDynLib(feat)
