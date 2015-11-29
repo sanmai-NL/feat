@@ -112,26 +112,24 @@ input_verify_annotation_table_consistency <- function(SENTENCE_FILES_PATHS_CVEC=
     check_args(fun=input_verify_annotation_table_consistency)
 
     if (!base::identical(
-            base::levels(
-                ANNOTATION_DT[['segment_type']]),
+            base::levels(ANNOTATION_DT[['segment_type']]),
             SEGMENT_TYPES_CVEC))
-            base::stop(
-                base::sprintf(
-                    'The annotation table contains segment_type levels {%s}, but you specified a different SEGMENT_TYPES_CVEC {%s}. ',
-                    base::paste0(
-                        base::levels(
-                            ANNOTATION_DT[['segment_type']]),
-                        collapse=', '),
-                    base::paste0(
-                        SEGMENT_TYPES_CVEC, collapse=', ')))
+        base::stop(
+            base::sprintf(
+                'The annotation table contains segment_type levels {%s}, but you specified a different SEGMENT_TYPES_CVEC {%s}. ',
+                base::paste0(
+                    base::levels(
+                        ANNOTATION_DT[['segment_type']]),
+                    collapse=', '),
+                base::paste0(
+                    SEGMENT_TYPES_CVEC, collapse=', ')))
 
     ACTUAL_SHA256_VALUES_CVEC <-
         input_calculate_hash_values(FILES_PATHS_CVEC=SENTENCE_FILES_PATHS_CVEC)
 
     # TODO: use setorder() for efficiency.
     if (!base::identical(
-            base::as.factor(
-                ACTUAL_SHA256_VALUES_CVEC),
+            base::as.factor(ACTUAL_SHA256_VALUES_CVEC),
             ANNOTATION_DT[['SHA256_value']]))
         base::stop(
             base::sprintf(
