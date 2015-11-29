@@ -5,6 +5,8 @@ NULL
 
 ALL_SEGMENT_TYPES <-
     'all'
+FEATURE_REPRESENTATIONS_CVEC <-
+    base::c('FLATSEQ', 'STRCT')
 
 methods::setClass(
     'ObjectFeatureSet',
@@ -197,66 +199,4 @@ docs_process_collection <- function(ANNOTATION_DT=NULL, ARC_CATEGORIES=NULL, DOC
             SEED_I=SEED_I)
 
     return(FEATURE_SET_LST_LST)
-}
-
-
-
-
-
-
-
-############################################
-read_sequences_scores_dvec_file <- function(SEQUENCES_SCORES_DVEC_FILE_PATH_STR, SEGMENT_TYPE_STR) {
-    SEQUENCES_SCORES_DVEC_FILE_NAME_STR <-
-        base::basename(SEQUENCES_SCORES_DVEC_FILE_PATH_STR)
-    if (stringi::stri_startswith_fixed(
-        str=SEQUENCES_SCORES_DVEC_FILE_NAME_STR,
-        pattern=SEGMENT_TYPE_STR)) {
-        return(SEQUENCES_SCORES_DVEC_FILE_PATH_STR)
-    } else {
-        return(NA_character_)
-    }
-}
-
-#' @export
-docs_produce_design_matrix_d_f <- function(FEATURE_SET_LST_LST=NULL, ANNOTATION_DT=NULL, SEGMENT_TYPE=NULL) {
-    check_args(fun=docs_produce_design_matrix_d_f)
-
-    FEATURE_SET_LST <-
-        base::unlist(
-            FEATURE_SET_LST_LST,
-            recursive=FALSE)
-
-    SEQUENCES_SCORES_DVEC_FILE_PATHS_CVEC <-
-        stats::na.omit(
-            base::vapply(
-                FEATURE_SET_LST,
-                FUN=function(x) read_sequences_scores_dvec_file(x@FLATSEQ@SEQUENCES_AND_SCORES@SEQUENCES_SCORES_DVEC_FILE_PATH_STR, SEGMENT_TYPE),
-                FUN.VALUE=character(length=1L)))
-
-    FEATURE_D_F_LST <-
-        base::lapply(
-            SEQUENCES_SCORES_DVEC_FILE_PATHS_CVEC,
-            FUN=function(FEATURE_SCORES_DVEC_FILES_PATH_STR)
-                base::do.call(
-                    dplyr::data_frame,
-                    base::as.list(
-                        base::readRDS(
-                            FEATURE_SCORES_DVEC_FILES_PATH_STR))))
-
-    design_matrix_d_f <-
-        dplyr::bind_rows(FEATURE_D_F_LST)
-    design_matrix_d_f[base::is.na(design_matrix_d_f)] <- 0.0
-
-    # TODO: do not simply select the document's first sentence's conclusion type, but handle the case of multiple conclusion types.simply
-    CONCLUSION_TYPE_FAC <-
-        dplyr::distinct(ANNOTATION_DT, document_name)[['conclusion_type']]
-
-    # browser()
-    DESIGN_MATRIX_Y_D_F <-
-        dplyr::mutate(
-            design_matrix_d_f,
-            conclusion_type=CONCLUSION_TYPE_FAC)
-
-    return(DESIGN_MATRIX_Y_D_F)
 }
