@@ -29,36 +29,39 @@ strct_nodeset_of_xml_doc <- function(XML_DOC=NULL)
 strct_arc_d_f_of_node <- function(CHILD_NODE=NULL, ARC_CATEGORIES=NULL) {
     PARENT_NODE <-
         xml2::xml_parent(CHILD_NODE)
-    PARENT_ID <-
+    PARENT_ID_I <-
         base::as.integer(
             xml2::xml_attr(PARENT_NODE, 'id'))
-    CHILD_ID <-
+    CHILD_ID_I <-
         base::as.integer(
             xml2::xml_attr(CHILD_NODE, 'id'))
 
-    arc_labels <-
+    arc_labels_cvec <-
         xml2::xml_attrs(
             CHILD_NODE)[
                 base::names(
                     ARC_CATEGORIES@PRIOR_PROBABILITY_DVEC)]
-    arc_labels <-
-        arc_labels[!base::is.na(arc_labels)]
+    arc_labels_cvec <-
+        arc_labels_cvec[!base::is.na(arc_labels_cvec)]
+
+    arc_categories_cvec <-
+        base::names(arc_labels_cvec)
 
     arc_scores_dvec <-
         ARC_CATEGORIES@PRIOR_PROBABILITY_DVEC[
-            base::names(arc_labels)]
+            arc_categories_cvec]
 
     base::names(arc_scores_dvec) <-
-        arc_labels
+        base::paste0(arc_categories_cvec, arc_labels_cvec, sep='_')
 
     ARC_LST <-
         base::c(
-            parent_id=PARENT_ID,
-            child_id=CHILD_ID,
-            base::as.list(
-                arc_scores_dvec))
+            parent_id=PARENT_ID_I,
+            child_id=CHILD_ID_I,
+            base::as.list(arc_scores_dvec))
 
     # TODO: (efficiency)
+
     return(base::list(dplyr::as_data_frame(ARC_LST)))
 }
 
