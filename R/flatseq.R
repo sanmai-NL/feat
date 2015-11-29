@@ -29,47 +29,49 @@ flatseq_sentences_cvec_of_xml_doc <- function(XML_DOC=NULL)
 flatseq_extract <- function(ALPINO_XML_DOC_LST=NULL, OUTPUT_DIR_PATH_STR=NULL, SEGMENT_TYPE=NULL, SRILM_PARAMETERS=NULL) {
     check_args(fun=flatseq_extract)
 
-    SENTENCES_CVEC <-
-        base::vapply(
-            ALPINO_XML_DOC_LST,
-            FUN=flatseq_sentences_cvec_of_xml_doc,
-            FUN.VALUE=TEMPLATES_1_CVEC,
-            USE.NAMES=FALSE)
+    SEGMENT_FILE_PATH_STR <-
+        base::file.path(
+            OUTPUT_DIR_PATH_STR,
+            base::paste0(
+                SEGMENT_TYPE,
+                '.flatseq'))
 
-    if (SEGMENT_TYPE == ALL_SEGMENT_TYPES) {
-        SEGMENT_COUNTS_FILES_PATHS_CVEC <-
-            base::list.files(
-                full.names=TRUE,
-                no..=TRUE,
-                all.files=FALSE,
-                recursive=FALSE,
-                path=OUTPUT_DIR_PATH_STR,
-                pattern=FLATSEQ_FILE_NAMES_REX_STR)
-        SEGMENT_FILE_PATH_STR <-
-            base::file.path(
-                OUTPUT_DIR_PATH_STR,
-                'all.flatseq.counts')
+    if (!base::file.exists(SEGMENT_FILE_PATH_STR)) {
+        SENTENCES_CVEC <-
+            base::vapply(
+                ALPINO_XML_DOC_LST,
+                FUN=flatseq_sentences_cvec_of_xml_doc,
+                FUN.VALUE=TEMPLATES_1_CVEC,
+                USE.NAMES=FALSE)
 
-        EXIT_STATUS <-
-            base::system2(
-                'cat',
-                SEGMENT_COUNTS_FILES_PATHS_CVEC,
-                stdout=SEGMENT_FILE_PATH_STR)
-        if (EXIT_STATUS != 0L)
-            base::stop(
-                base::sprintf(
-                    "Error running 'cat'. Exit status: %d. ",
-                    EXIT_STATUS))
-    } else {
-        SEGMENT_FILE_PATH_STR <-
-            base::file.path(
-                OUTPUT_DIR_PATH_STR,
-                base::paste0(
-                    SEGMENT_TYPE,
-                    '.flatseq'))
+        if (SEGMENT_TYPE == ALL_SEGMENT_TYPES) {
+            SEGMENT_COUNTS_FILES_PATHS_CVEC <-
+                base::list.files(
+                    full.names=TRUE,
+                    no..=TRUE,
+                    all.files=FALSE,
+                    recursive=FALSE,
+                    path=OUTPUT_DIR_PATH_STR,
+                    pattern=FLATSEQ_FILE_NAMES_REX_STR)
+
+            EXIT_STATUS <-
+                base::system2(
+                    'cat',
+                    SEGMENT_COUNTS_FILES_PATHS_CVEC,
+                    stdout=SEGMENT_FILE_PATH_STR)
+
+            if (EXIT_STATUS != 0L)
+                base::stop(
+                    base::sprintf(
+                        "Error running 'cat'. Exit status: %d. ",
+                        EXIT_STATUS))
+        }
+
+        base::cat(
+            SENTENCES_CVEC,
+            file=SEGMENT_FILE_PATH_STR,
+            sep='\n')
     }
-
-    base::cat(SENTENCES_CVEC, file=SEGMENT_FILE_PATH_STR, sep='\n')
 
     COUNTS_AND_LM <-
         SRILM_count_and_write_ARPA_language_model(
