@@ -15,10 +15,10 @@ methods::setClass(
         COUNTS_FILE_PATH_STR='character'),
     sealed=TRUE)
 methods::setClass(
-    'SequencesAndPerplexities',
+    'SequencesAndScores',
     methods::representation(
         SEQUENCES_FILE_PATH_STR='character',
-        SEQUENCES_PERPLEXITIES_DVEC_FILE_PATH_STR='character'),
+        SEQUENCES_SCORES_DVEC_FILE_PATH_STR='character'),
     sealed=TRUE)
 
 SRILM_count_and_write_ARPA_language_model <- function(TEXT_FILE_PATH_STR=NULL, COUNTS_FILE_PATH_STR=base::paste0(TEXT_FILE_PATH_STR, '.counts'), LANGUAGE_MODEL_FILE_PATH_STR=base::paste0(COUNTS_FILE_PATH_STR, '.arpa'), PARAMETERS=NULL) {
@@ -74,13 +74,13 @@ SRILM_write_ARPA_language_model <- function(COUNTS_FILE_PATH_STR=NULL, LANGUAGE_
     return(COUNTS_AND_LM)
 }
 
-SRILM_write_feature_scores <- function(COUNTS_AND_LM=NULL, SEQUENCES_FILE_PATH_STR=base::paste0(COUNTS_AND_LM@COUNTS_FILE_PATH_STR, '.seq'), SEQUENCES_PERPLEXITIES_DVEC_FILE_PATH_STR=base::paste0(SEQUENCES_FILE_PATH_STR, '_ppl.rds'), SEED_I=NULL) {
+SRILM_write_feature_scores <- function(COUNTS_AND_LM=NULL, SEQUENCES_FILE_PATH_STR=base::paste0(COUNTS_AND_LM@COUNTS_FILE_PATH_STR, '.seq'), SEQUENCES_SCORES_DVEC_FILE_PATH_STR=base::paste0(SEQUENCES_FILE_PATH_STR, '.scores.rds'), SEED_I=NULL) {
     check_args(fun=SRILM_write_feature_scores)
 
     base::message(
         base::sprintf(
             "Writing feature scores to \n'%s'\n using 'ngram' on the counts file \n'%s'\n transformed to sequences file \n'%s'\n and language model file \n'%s'\n ...",
-            SEQUENCES_PERPLEXITIES_DVEC_FILE_PATH_STR,
+            SEQUENCES_SCORES_DVEC_FILE_PATH_STR,
             COUNTS_AND_LM@COUNTS_FILE_PATH_STR,
             SEQUENCES_FILE_PATH_STR,
             COUNTS_AND_LM@LANGUAGE_MODEL_FILE_PATH_STR))
@@ -99,7 +99,7 @@ SRILM_write_feature_scores <- function(COUNTS_AND_LM=NULL, SEQUENCES_FILE_PATH_S
                 "Error running 'awk'. Exit status: %d",
                 EXIT_STATUS))
 
-    ## Calculate perplexity on each sequence.
+    ## Calculate score on each sequence.
     NGRAM_OUTPUT_LINES_CVEC <-
         base::tryCatch(
             # TODO: add logging
@@ -126,24 +126,24 @@ SRILM_write_feature_scores <- function(COUNTS_AND_LM=NULL, SEQUENCES_FILE_PATH_S
                         stringi::stri_match_first_regex(
                             NGRAM_OUTPUT_LINES_CVEC,
                             pattern=PERPLEXITY_LINES_REX_STR))[, 2L])))
-    sequences_perplexities_dvec <-
+    sequences_scores_dvec <-
         perplexities_rex_dvec[-base::length(perplexities_rex_dvec)]
 
     SEQUENCES_CVEC <-
         base::readLines(
             SEQUENCES_FILE_PATH_STR,
             encoding='UTF-8')
-    base::names(sequences_perplexities_dvec) <- SEQUENCES_CVEC
+    base::names(sequences_scores_dvec) <- SEQUENCES_CVEC
 
     base::saveRDS(
-        sequences_perplexities_dvec,
-        file=SEQUENCES_PERPLEXITIES_DVEC_FILE_PATH_STR)
+        sequences_scores_dvec,
+        file=SEQUENCES_SCORES_DVEC_FILE_PATH_STR)
 
-    SEQUENCES_AND_PERPLEXITIES <-
+    SEQUENCES_AND_SCORES <-
         methods::new(
-            'SequencesAndPerplexities',
+            'SequencesAndScores',
             SEQUENCES_FILE_PATH_STR=SEQUENCES_FILE_PATH_STR,
-            SEQUENCES_PERPLEXITIES_DVEC_FILE_PATH_STR=SEQUENCES_PERPLEXITIES_DVEC_FILE_PATH_STR)
+            SEQUENCES_SCORES_DVEC_FILE_PATH_STR=SEQUENCES_SCORES_DVEC_FILE_PATH_STR)
 
-    return(SEQUENCES_AND_PERPLEXITIES)
+    return(SEQUENCES_AND_SCORES)
 }
