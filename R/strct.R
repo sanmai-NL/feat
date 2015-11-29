@@ -7,6 +7,10 @@ NULL
 
 STRCT_XPATH_STR <-
     '/alpino_ds/node//node'
+STRCT_FILE_NAME_EXTENSION_STR <-
+    '.strct'
+STRCT_COUNTS_FILE_NAME_EXTENSION_STR <-
+    stringi::stri_join(STRCT_FILE_NAME_EXTENSION_STR, '.counts')
 
 strct_nodeset_of_xml_doc_error <- function(message=NULL) {
     base::write(
@@ -52,7 +56,7 @@ strct_arc_d_f_of_node <- function(CHILD_NODE=NULL, ARC_CATEGORIES=NULL) {
             arc_categories_cvec]
 
     base::names(arc_scores_dvec) <-
-        base::paste0(arc_categories_cvec, arc_labels_cvec, sep='_')
+        stringi::stri_join(arc_categories_cvec, arc_labels_cvec, sep='_')
 
     ARC_LST <-
         base::c(
@@ -61,7 +65,6 @@ strct_arc_d_f_of_node <- function(CHILD_NODE=NULL, ARC_CATEGORIES=NULL) {
             base::as.list(arc_scores_dvec))
 
     # TODO: (efficiency)
-
     return(base::list(dplyr::as_data_frame(ARC_LST)))
 }
 
@@ -104,7 +107,7 @@ strct_write_sequence_counts <- function(ALPINO_XML_DOC_LST=NULL, ARC_CATEGORIES=
             OUTPUT_DIR_PATH_STR,
             base::paste0(
                 SEGMENT_TYPE,
-                '.strct.counts'))
+                STRCT_COUNTS_FILE_NAME_EXTENSION_STR))
 
     if (!base::file.exists(GRAPHVIZ_FILE_PATH_STR) ||
         !base::file.exists(SRILM_COUNTS_FILE_PATH_STR)) {

@@ -5,8 +5,10 @@ NULL
 
 FLATSEQ_XPATH_STR <-
     '/alpino_ds/sentence/text()'
+FLATSEQ_FILE_NAME_EXTENSION_STR <-
+    '.flatseq'
 FLATSEQ_FILE_NAMES_REX_STR <-
-    '.+\\.flatseq.counts$'
+    stringi::stri_join('.+\\', FLATSEQ_FILE_NAME_EXTENSION_STR, '.counts$')
 
 flatseq_sentences_cvec_of_xml_doc_error <- function(message=NULL) {
     base::write(
@@ -34,7 +36,7 @@ flatseq_extract <- function(ALPINO_XML_DOC_LST=NULL, OUTPUT_DIR_PATH_STR=NULL, S
             OUTPUT_DIR_PATH_STR,
             base::paste0(
                 SEGMENT_TYPE,
-                '.flatseq'))
+                FLATSEQ_FILE_NAME_EXTENSION_STR))
 
     if (!base::file.exists(SEGMENT_FILE_PATH_STR)) {
         SENTENCES_CVEC <-
