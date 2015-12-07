@@ -10,7 +10,7 @@ methods::setClass(
         SEQUENCES_SCORES_DVEC_FILE_PATHS_CVEC='character'),
     sealed=TRUE)
 
-preanalysis_extract_sequences_scores_dvec_file_paths_cvec <- function(OBJECT_FEATURE_SETS=NULL, SEGMENT_TYPE_STR=NULL, MY_FEATURE_REPRESENTATIONS_CVEC=NULL) {
+preanalysis_extract_sequences_scores_dvec_file_paths_cvec <- function(OBJECT_FEATURE_SETS=NULL, MY_FEATURE_REPRESENTATIONS_CVEC=NULL, OBJECT_FILES_FILTER_REX_STR=NULL) {
     check_args(fun=preanalysis_extract_sequences_scores_dvec_file_paths_cvec)
 
     SEQUENCES_SCORES_DVEC_FILE_PATHS_CVEC <-
@@ -18,13 +18,15 @@ preanalysis_extract_sequences_scores_dvec_file_paths_cvec <- function(OBJECT_FEA
             MY_FEATURE_REPRESENTATIONS_CVEC,
             FUN=function(FEATURE_REPRESENTATION_STR) {
                 SEQUENCES_SCORES_DVEC_FILE_PATH_STR <-
-                   methods::slot(OBJECT_FEATURE_SETS, FEATURE_REPRESENTATION_STR)@SEQUENCES_AND_SCORES@SEQUENCES_SCORES_DVEC_FILE_PATH_STR
+                	methods::slot(
+                   		OBJECT_FEATURE_SETS,
+                   		FEATURE_REPRESENTATION_STR)@SEQUENCES_AND_SCORES@SEQUENCES_SCORES_DVEC_FILE_PATH_STR
                 SEQUENCES_SCORES_DVEC_FILE_NAME_STR <-
                     base::basename(SEQUENCES_SCORES_DVEC_FILE_PATH_STR)
 
-                if (stringi::stri_startswith_fixed(
+                if (stringi::stri_detect_regex(
                     str=SEQUENCES_SCORES_DVEC_FILE_NAME_STR,
-                    pattern=SEGMENT_TYPE_STR)) {
+                    pattern=OBJECT_FILES_FILTER_REX_STR)) {
                     return(SEQUENCES_SCORES_DVEC_FILE_PATH_STR)
                 } else {
                     return(NA_character_)
@@ -36,7 +38,7 @@ preanalysis_extract_sequences_scores_dvec_file_paths_cvec <- function(OBJECT_FEA
 }
 
 #' @export
-preanalysis_extract_feature_names_and_scores_file_paths <- function(FEATURE_SET_LST=NULL, MY_FEATURE_REPRESENTATIONS_CVEC=NULL, SEGMENT_TYPE=NULL) {
+preanalysis_extract_feature_names_and_scores_file_paths <- function(FEATURE_SET_LST=NULL, MY_FEATURE_REPRESENTATIONS_CVEC=NULL, OBJECT_FILES_FILTER_REX_STR=NULL) {
     check_args(fun=preanalysis_extract_feature_names_and_scores_file_paths)
     if (!base::all(MY_FEATURE_REPRESENTATIONS_CVEC %in% FEATURE_REPRESENTATIONS_CVEC)) {
         base::stop('Unknown feature representation specified. ')
@@ -47,12 +49,11 @@ preanalysis_extract_feature_names_and_scores_file_paths <- function(FEATURE_SET_
             base::c(
                 base::vapply(
                     FEATURE_SET_LST,
-                    FUN=
-                    function(OBJECT_FEATURE_SETS) preanalysis_extract_sequences_scores_dvec_file_paths_cvec(
-                        OBJECT_FEATURE_SETS=OBJECT_FEATURE_SETS,
-                        SEGMENT_TYPE=SEGMENT_TYPE,
-                        MY_FEATURE_REPRESENTATIONS_CVEC=FEATURE_REPRESENTATIONS_CVEC),
-                    FUN.VALUE=FEATURE_REPRESENTATIONS_CVEC)))
+                    FUN=preanalysis_extract_sequences_scores_dvec_file_paths_cvec,
+                    MY_FEATURE_REPRESENTATIONS_CVEC=FEATURE_REPRESENTATIONS_CVEC,
+                    OBJECT_FILES_FILTER_REX_STR=OBJECT_FILES_FILTER_REX_STR,
+                    FUN.VALUE=FEATURE_REPRESENTATIONS_CVEC,
+                    USE.NAMES=FALSE)))
     FEATURES_CVEC_LST <-
         parallel::mclapply(
             SEQUENCES_SCORES_DVEC_FILE_PATHS_CVEC,
@@ -71,7 +72,7 @@ preanalysis_extract_feature_names_and_scores_file_paths <- function(FEATURE_SET_
 }
 
 #' @export
-preanalysis_produce_design_mat <- function(FEATURE_SET_LST_LST=NULL, ANNOTATION_DT=NULL, SEGMENT_TYPE=NULL, MY_FEATURE_REPRESENTATIONS_CVEC=NULL) {
+preanalysis_produce_design_mat <- function(ANNOTATION_DT=NULL, FEATURE_SET_LST_LST=NULL, MY_FEATURE_REPRESENTATIONS_CVEC=NULL, OBJECT_FILES_FILTER_REX_STR=NULL) {
     check_args(fun=preanalysis_produce_design_mat)
 
     FEATURE_SET_LST <-
@@ -83,8 +84,8 @@ preanalysis_produce_design_mat <- function(FEATURE_SET_LST_LST=NULL, ANNOTATION_
     FEATURE_NAMES_AND_SCORES_FILE_PATHS <-
         preanalysis_extract_feature_names_and_scores_file_paths(
             FEATURE_SET_LST=FEATURE_SET_LST,
-            SEGMENT_TYPE=SEGMENT_TYPE,
-            MY_FEATURE_REPRESENTATIONS_CVEC=MY_FEATURE_REPRESENTATIONS_CVEC)
+            MY_FEATURE_REPRESENTATIONS_CVEC=MY_FEATURE_REPRESENTATIONS_CVEC,
+            OBJECT_FILES_FILTER_REX_STR=OBJECT_FILES_FILTER_REX_STR)
 
     FEATURE_TYPES_CVEC <-
         stringi::stri_unique(
@@ -106,7 +107,7 @@ preanalysis_produce_design_mat <- function(FEATURE_SET_LST_LST=NULL, ANNOTATION_
                 DOCUMENT_NAMES_CVEC,
                 FEATURE_TYPES_CVEC))
 
-    ## Set sparse design matrix cells to feature scores (document, feature) given a segment type withing the document
+    ## Set sparse design matrix cells to feature scores (document, feature) of objects
     for (SEQUENCES_SCORES_DVEC_FILE_PATH_STR in FEATURE_NAMES_AND_SCORES_FILE_PATHS@SEQUENCES_SCORES_DVEC_FILE_PATHS_CVEC) {
         FEATURES_SCORES_DVEC <-
             base::readRDS(SEQUENCES_SCORES_DVEC_FILE_PATH_STR)

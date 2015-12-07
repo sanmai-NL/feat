@@ -87,7 +87,7 @@ SRILM_write_feature_scores <- function(COUNTS_AND_LM=NULL, SEQUENCES_FILE_PATH_S
         !base::file.exists(SEQUENCES_FILE_PATH_STR)) {
         base::message(
             base::sprintf(
-                "Writing feature scores to \n'%s'\n using 'ngram' on the counts file \n'%s'\n transformed to sequences file \n'%s'\n and language model file \n'%s'\n ...",
+                "Writing feature scores to '%s' using 'ngram' on the counts file '%s' transformed to sequences file '%s' and LM file '%s' ...",
                 SEQUENCES_SCORES_DVEC_FILE_PATH_STR,
                 COUNTS_AND_LM@COUNTS_FILE_PATH_STR,
                 SEQUENCES_FILE_PATH_STR,

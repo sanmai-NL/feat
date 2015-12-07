@@ -108,7 +108,7 @@ input_write_annotation_table_template <- function(DOCUMENTS_DIR_PATH_STR=NULL, O
     return()
 }
 
-input_verify_annotation_table_consistency <- function(SENTENCE_FILES_PATHS_CVEC=NULL, ANNOTATION_DT=NULL, SEGMENT_TYPES_CVEC=NULL) {
+input_verify_annotation_table_consistency <- function(ANNOTATION_DT=NULL, SEGMENT_TYPES_CVEC=NULL, SENTENCE_FILES_PATHS_CVEC=NULL) {
     check_args(fun=input_verify_annotation_table_consistency)
 
     if (!base::identical(
@@ -122,7 +122,8 @@ input_verify_annotation_table_consistency <- function(SENTENCE_FILES_PATHS_CVEC=
                         ANNOTATION_DT[['segment_type']]),
                     collapse=', '),
                 base::paste0(
-                    SEGMENT_TYPES_CVEC, collapse=', ')))
+                    SEGMENT_TYPES_CVEC,
+                    collapse=', ')))
 
     ACTUAL_SHA256_VALUES_CVEC <-
         input_calculate_hash_values(FILES_PATHS_CVEC=SENTENCE_FILES_PATHS_CVEC)

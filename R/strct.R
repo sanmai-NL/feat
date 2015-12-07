@@ -8,7 +8,7 @@ NULL
 STRCT_XPATH_STR <-
     '/alpino_ds/node//node'
 STRCT_FILE_NAME_EXTENSION_STR <-
-    '.strct'
+    'strct'
 STRCT_COUNTS_FILE_NAME_EXTENSION_STR <-
     stringi::stri_join(STRCT_FILE_NAME_EXTENSION_STR, '.counts')
 
@@ -91,22 +91,21 @@ strct_arcs_d_f_of_nodeset_lst <- function(NODESET_LST=NULL, ARC_CATEGORIES=NULL)
     return(arcs_d_f)
 }
 
-strct_write_sequence_counts <- function(ALPINO_XML_DOC_LST=NULL, ARC_CATEGORIES=NULL, SEGMENT_TYPE=NULL, OUTPUT_DIR_PATH_STR=NULL, N=NULL, node_child_id_i=0L) {
+strct_write_sequence_counts <- function(ALPINO_XML_DOC_LST=NULL, ARC_CATEGORIES=NULL, N=NULL, OUTPUT_DIR_PATH_STR=NULL, SENTENCE_COLLAPSING_FML_INDEX_I=NULL) {
     # TODO: make n_strides_to_take & n_iterations parameters.
     check_args(fun=strct_write_sequence_counts)
 
     GRAPHVIZ_FILE_PATH_STR <-
         base::file.path(
             OUTPUT_DIR_PATH_STR,
-            base::paste0(
-                SEGMENT_TYPE,
-                '.gv'))
+            base::sprintf('%d.gv',
+                SENTENCE_COLLAPSING_FML_INDEX_I))
 
     SRILM_COUNTS_FILE_PATH_STR <-
         base::file.path(
             OUTPUT_DIR_PATH_STR,
-            base::paste0(
-                SEGMENT_TYPE,
+            base::sprintf('%d.%s',
+                SENTENCE_COLLAPSING_FML_INDEX_I,
                 STRCT_COUNTS_FILE_NAME_EXTENSION_STR))
 
     if (!base::file.exists(GRAPHVIZ_FILE_PATH_STR) ||
@@ -149,20 +148,21 @@ strct_write_sequence_counts <- function(ALPINO_XML_DOC_LST=NULL, ARC_CATEGORIES=
     return(SRILM_COUNTS_FILE_PATH_STR)
 }
 
-strct_extract <- function(OUTPUT_DIR_PATH_STR=NULL, SEGMENT_TYPE=NULL, ALPINO_XML_DOC_LST=NULL, ARC_CATEGORIES=NULL, SRILM_PARAMETERS=NULL, N=NULL) {
+strct_extract <- function(
+    ALPINO_XML_DOC_LST=NULL, ARC_CATEGORIES=NULL, N=NULL, OUTPUT_DIR_PATH_STR=NULL, SENTENCE_COLLAPSING_FML_INDEX_I=NULL, SRILM_PARAMETERS=NULL) {
     check_args(fun=strct_extract)
 
-    COUNTS_FILE_PATH_STR <-
+    SRILM_COUNTS_FILE_PATH_STR <-
         strct_write_sequence_counts(
             ALPINO_XML_DOC_LST=ALPINO_XML_DOC_LST,
             ARC_CATEGORIES=ARC_CATEGORIES,
-            SEGMENT_TYPE=SEGMENT_TYPE,
+            N=N,
             OUTPUT_DIR_PATH_STR=OUTPUT_DIR_PATH_STR,
-            N=N)
+            SENTENCE_COLLAPSING_FML_INDEX_I=SENTENCE_COLLAPSING_FML_INDEX_I)
 
     COUNTS_AND_LM <-
         SRILM_write_ARPA_language_model(
-            COUNTS_FILE_PATH_STR=COUNTS_FILE_PATH_STR,
+            COUNTS_FILE_PATH_STR=SRILM_COUNTS_FILE_PATH_STR,
             PARAMETERS=SRILM_PARAMETERS)
 
     return(COUNTS_AND_LM)
