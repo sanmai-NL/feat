@@ -20,6 +20,7 @@ ANNOTATION_DT_COLUMN_NAMES_CVEC <-
         'segment_type',
         'conclusion_type',
         'comments')
+    # TODO: refactor
 
 ARC_CATEGORIES_DT_COLUMN_CLASSES_LST <-
     base::c(
@@ -126,12 +127,15 @@ input_verify_annotation_table_consistency <- function(ANNOTATION_DT=NULL, SEGMEN
                     collapse=', ')))
 
     ACTUAL_SHA256_VALUES_CVEC <-
-        input_calculate_hash_values(FILES_PATHS_CVEC=SENTENCE_FILES_PATHS_CVEC)
-
+        base::factor(
+            base::sort(
+                input_calculate_hash_values(
+                    FILES_PATHS_CVEC=SENTENCE_FILES_PATHS_CVEC)))
+    # TODO: replace the hash check something better and more efficient.
     # TODO: use setorder() for efficiency.
     if (!base::identical(
-            base::as.factor(ACTUAL_SHA256_VALUES_CVEC),
-            ANNOTATION_DT[['SHA256_value']]))
+            ACTUAL_SHA256_VALUES_CVEC,
+            base::sort(ANNOTATION_DT[['SHA256_value']])))
         base::stop(
             base::sprintf(
                 'The %d Alpino XML files listed in the annotation table are not of the same number and content as the %d XML files found in the documents directory. ',
