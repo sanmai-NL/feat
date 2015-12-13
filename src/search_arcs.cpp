@@ -16,6 +16,7 @@ typedef double Weight;
 const Weight NULL_WEIGHT = 0.0;
 typedef std::unordered_map <std::string, Weight> Sequence_weight_map;
 struct Vertex {
+    // TODO:
     // std::string name;
 };
 struct Arc {
@@ -24,6 +25,7 @@ struct Arc {
 };
 /* Linguistic network graphs */
 // TODO: use compressed sparse row graph.
+// boost::allow_parallel_edge_tag
 typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, Vertex, Arc> LinguisticNetwork;
 typedef unsigned long V;
 typedef LinguisticNetwork::edge_descriptor ArcDescriptor;
@@ -109,7 +111,9 @@ void write_GraphViz_file(const std::string & GraphViz_file_path, const ::Linguis
                 g[added_arc.first].label = arc_label;
                 g[added_arc.first].weight = weight;
                 /* Do not accept skipping of parallel arcs. */
-                assert(!added_edge.second);
+                Rcpp::Rcout << ":" << arc_label << ":(" << parent_id << "->" << child_id << "@" << weight << "):" << added_arc.second << ":";
+                // Nastily, in case the second vertex is equal to 1ul, it will be implicitly converted to false by !added_arc.second. Prevent an assertion failure for lack of a better solution with the following comparison.
+                assert(added_arc.second != false);
             }
         }
     }
@@ -244,14 +248,21 @@ void write_GraphViz_file(const std::string & GraphViz_file_path, const ::Linguis
 #endif
     }
     for (const ::Trail & trail : trails) {
-        const unsigned long walk_size = trail.size();
-        for (unsigned long window_start = 0ul; window_start <= walk_size; window_start++) {
+        const unsigned long trail_size = trail.size();
+        if (trail_size <= 0ul) {
+            Rcpp::stop("trail_size <= 0ul ");
+        }
+        // TODO:
+        Rcpp::Rcerr << "trail size: " << trail_size << std::endl;
+        for (unsigned long window_start = 0ul; window_start <= trail_size; window_start++) {
+            // TODO:
+            Rcpp::Rcerr << "    window_start: " << window_start << std::endl;
             for (unsigned long n = is_all_ngrams_up_to_n ? 1ul : N;
-                    (n <= N) && ((window_start + n) <= walk_size); n++) {
+                    (n <= N) && ((window_start + n) <= trail_size); n++) {
                 const ::Trail ngram_trail(trail.begin() + window_start, trail.begin() + window_start + n);
                 assert(!ngram_trail.empty());
 #ifndef NDEBUG
-                for (const ::Edge_descriptor & stride : ngram_trail)
+                for (const ::ArcDescriptor & stride : ngram_trail)
                     Rcpp::Rcerr << "=>" << boost::get(&Arc::label, g, stride);
                 Rcpp::Rcerr << std::endl;
 #endif
@@ -260,11 +271,12 @@ void write_GraphViz_file(const std::string & GraphViz_file_path, const ::Linguis
         }
     }
 
+
     if (!ngram_trails.empty()) {
         ngram_trails.shrink_to_fit();
         Rcpp::Rcout << "Collected " << ngram_trails.size() << " n-grams of trails. " << std::endl;
     } else {
-        Rcpp::stop("Could not find ngrams in walks. ");
+        Rcpp::Rcerr << "Could not find any n-gram in any trail. " << std::endl;
     }
 
     return(ngram_trails);
@@ -282,12 +294,23 @@ void enumerate_random_trails_on_linguistic_network(const Rcpp::DataFrame & arcs_
     write_GraphViz_file(GraphViz_file_path, g);
 
     ::Trails trails = accumulate_random_trails(n_iterations, n_strides_to_take, N, g);
-    ::Trails ngram_trails = accumulate_ngram_trails(std::move(trails), arcs_scores_dmat, N, n_strides_to_take, is_all_ngrams_up_to_n, g);
-    /* Clear trails now that N-gram trails were obtained. A poor man's way to very poorly mimic the memory efficiency of the consumer-producer pattern. */
-    trails.clear();
+    if (!trails.empty()) {
+        Rcpp::Rcout << "Collected " << trails.size() << " trails. " << std::endl;
+        ::Trails ngram_trails = accumulate_ngram_trails(std::move(trails), arcs_scores_dmat, N, n_strides_to_take, is_all_ngrams_up_to_n, g);
+        /* Clear trails now that N-gram trails were obtained. A poor man's way to very poorly mimic the memory efficiency of the consumer-producer pattern. */
+        trails.clear();
 
-    const ::Sequence_weight_map sequence_weight_map = sequence_weight_map_of_ngram_trails(g, ngram_trails);
-    write_SRILM_counts_file(SRILM_counts_file_path, sequence_weight_map);
+        if (!ngram_trails.empty()) {
+            const ::Sequence_weight_map sequence_weight_map = sequence_weight_map_of_ngram_trails(g, ngram_trails);
+            write_SRILM_counts_file(SRILM_counts_file_path, sequence_weight_map);
+        }
+    } else {
+        Rcpp::Rcout << "Collected no trails. " << std::endl;
+        // TODO: Replace. Some trail must be possible?
+        const ::Sequence_weight_map sequence_weight_map {{"DUMMY", 0.0}};
+
+        write_SRILM_counts_file(SRILM_counts_file_path, sequence_weight_map);
+    }
 #ifndef NDEBUG
     Rcpp::Rcerr << "Done walking randomly. " << std::endl;;
 #endif
