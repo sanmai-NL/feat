@@ -1,18 +1,22 @@
 Authors@R: person("Sander", "Maijers", email = "S.N.Maijers+R-feat@gmail.com", role = c("aut", "cre"))
+ByteCompile: true
 BugReports: https://github.com/sanmai-NL/feat/issues
+Classification/ACM-2012: 10010147.10010178.10010179, 10010147.10010257.10010258.10010259.10010263
 Depends:
-    R (>= 3.2.1),
     R (< 4.0.0),
-    data.table (>= 1.9.6),
+    R (>= 3.2.1)
+Imports:
     data.table (< 2.0.0),
-    dplyr (>= 0.4.3),
-    dplyr (< 1.0.0),
+    data.table (>= 1.9.6),
     digest (< 0.7.0),
     digest (>= 0.6.8),
-    xml2 (< 2.0.0),
-    xml2 (>= 0.1.2),
+    dplyr (< 1.0.0),
+    dplyr (>= 0.4.3),
+    methods,
+    Rcpp (<= 1.0.0),
     Rcpp (>= 0.12.1),
-    Rcpp (<= 1.0.0)
+    xml2 (< 2.0.0),
+    xml2 (>= 0.1.2)
 Description: An R package that converts a parsed Dutch text document collection
  to a (sparse) design matrix with variables for each observed flat-sequential
   (word n-grams) and structural (parse graph trail n-grams) feature, using
@@ -21,6 +25,8 @@ Description: An R package that converts a parsed Dutch text document collection
 LazyData: true
 License: custom
 LinkingTo: Rcpp
+NeedsCompilation: yes
+OS_type: unix
 Package: feat
 Suggests:
     testthat
