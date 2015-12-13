@@ -1,3 +1,4 @@
 CXX_STD=CXX11
-PKG_CXXFLAGS+=-Wall -Werror -Wignored-qualifiers -Wformat -Wnull-dereference -ftrapv -fcolor-diagnostics
-PKG_LDFLAGS+=-g
+PKG_CXXFLAGS+= -Wall -Wignored-qualifiers -Wformat -Wnull-dereference -ftrapv -fcolor-diagnostics
+# TODO:
+#PKG_LDFLAGS+=-g
