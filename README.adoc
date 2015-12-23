@@ -27,7 +27,7 @@ devtools::install_github('sanmai-NL/feat')
 
 = To run
 
-See link:inst/web/index.html[`the API documentation`].
+See https://cdn.rawgit.com/sanmai-NL/feat/master/inst/web/index.html[`the API documentation`].
 
 (Examples forthcoming.)
 
