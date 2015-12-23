@@ -1,36 +1,66 @@
 Authors@R: person("Sander", "Maijers", email = "S.N.Maijers+R-feat@gmail.com", role = c("aut", "cre"))
 ByteCompile: true
 BugReports: https://github.com/sanmai-NL/feat/issues
-Classification/ACM-2012: 10010147.10010178.10010179, 10010147.10010257.10010258.10010259.10010263
+Classification/ACM-2012: 10010147.10010178.10010179,
+    10010147.10010257.10010258.10010259.10010263
 Depends:
     R (< 4.0.0),
-    R (>= 3.2.1)
-Imports:
+    R (>= 3.2.1),
     data.table (< 2.0.0),
-    data.table (>= 1.9.6),
+    data.table (>= 1.9.7)
+Imports:
     digest (< 0.7.0),
     digest (>= 0.6.8),
-    dplyr (< 1.0.0),
-    dplyr (>= 0.4.3),
+    futile.logger (< 2.0.0),
+    futile.logger (>= 1.4.1),
     methods,
-    Rcpp (<= 1.0.0),
-    Rcpp (>= 0.12.1),
+    stringi (< 2.0),
+    stringi (>= 1.0),
+    Matrix (< 2.0),
+    Matrix (>= 1.2),
+    Rcpp (>= 0.12.2),
+    Rcpp (< 1.0.0),
     xml2 (< 2.0.0),
     xml2 (>= 0.1.2)
-Description: An R package that converts a parsed Dutch text document collection
- to a (sparse) design matrix with variables for each observed flat-sequential
-  (word n-grams) and structural (parse graph trail n-grams) feature, using
-  SRILM and custom code. Currently only the Alpino XML parse format is
-  implemented, limiting applicability to documents in Dutch.
+Description: Extracts from a collection of XML-encoded documents a (sparse)
+    design matrix with variables for each observed surface (word n-grams) and
+    structural feature of an objects. Objects can be represented by one or more
+    observations (rows) in an annotations table. Such objects can f.i. represent
+    text segments or single sentences, linguistic sentence graph (e.g., a syntax
+    tree). The structural feature representation of objects, linguistic networks,
+    are unions of the XML documents. These unions are multidigraphs with arcs
+    labeled with attribute (name, value) pairs of elements. For example, arcs can
+    be considered labeled with linguistic dependency relations between words in the
+    syntax tree. Trails in these linguistic networks are randomly sampled, and then
+    treated as sequences of arcs from parent to child elements, from which n-grams
+    can be extracted as well.
 LazyData: true
-License: custom
-LinkingTo: Rcpp
+License: CC0
+LinkingTo: BH (>= 1.58.0), Rcpp (>= 0.12.2)
 NeedsCompilation: yes
 OS_type: unix
 Package: feat
+SystemRequirements: SRILM (>= 1.7.1)
 Suggests:
     testthat
-Title: Parsed Documents as Long Sparse Linguistic Feature Vectors
+Title: Extract (Linguistic) Structural and Surface Features from XML Documents
 URL: https://github.com/sanmai-NL/feat
-Version: 0.1.0
+Version: 0.2.0
 RoxygenNote: 5.0.1
+Collate:
+    'Annotations-class.R'
+    'ArcCategories-class.R'
+    'FilesystemPath-class.R'
+    'CountsAndLM-class.R'
+    'FeatureRepresentation-class.R'
+    'FeaturesExtractionParameters-class.R'
+    'RcppExports.R'
+    'SRILM.R'
+    'SrfFeatureRepresentation-class.R'
+    'StrctFeatureRepresentation-class.R'
+    'extract_features-generic.R'
+    'extract_features-methods.R'
+    'metadata.R'
+    'objects.R'
+    'srf.R'
+    'strct.R'

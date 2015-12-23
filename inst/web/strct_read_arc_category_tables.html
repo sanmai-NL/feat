@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>strct_read_arc_category_tables. feat 0.2.0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">feat 0.2.0</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>To read arc category tables</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>strct_read_arc_category_tables(ARC_CATEGORIES_CVEC, ARC_CATEGORY_FILES_NAMES_REX_STR&nbsp;=&nbsp;"^arc_category_(\\w+).tsv$", ARC_CATEGORY_TABLES_DIR_PATH)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>ARC_CATEGORIES_CVEC</dt>
+      <dd>The names used to identitify the arc categories, for which trails may be extracted by <code><a href='extract_features.html'>extract_features</a></code>.</dd>
+      <dt>ARC_CATEGORY_FILES_NAMES_REX_STR</dt>
+      <dd>A <em>PCRE</em> regular expression that exclusively matches the arc category table files.</dd>
+      <dt>ARC_CATEGORY_TABLES_DIR_PATH</dt>
+      <dd>A <code><a href='FilesystemPath-class.html'>FilesystemPath</a></code> to the directory containing an arc category table file for each arc category in <code>ARC_CATEGORIES_CVEC</code>.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+<code>ARC_CATEGORIES</code> See: <code><a href='ArcCategories-class.html'>ArcCategories</a></code>.
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>To read arc category tables</p>
+  
+    </div>
+      </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>strct_read_arc_category_tables</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

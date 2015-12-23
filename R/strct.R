@@ -1,36 +1,110 @@
-#' Structural features
-#'
-#' @name feat-strct
-#' @importFrom Rcpp evalCpp
-#' @useDynLib feat
-NULL
+## To extract structural features.
 
-STRCT_XPATH_STR <-
-    '/alpino_ds/node//node'
-STRCT_FILE_NAME_EXTENSION_STR <-
-    'strct'
-STRCT_COUNTS_FILE_NAME_EXTENSION_STR <-
-    stringi::stri_join(STRCT_FILE_NAME_EXTENSION_STR, '.counts')
+strct_read_arc_category_table <- function(
+    ARC_CATEGORY_TABLE_FILE_PATH_STR) {
 
-strct_nodeset_of_xml_doc_error <- function(message=NULL) {
-    base::write(
-        base::sprintf(
-            "Error extracting Alpino nodes with XPath '%s' from Alpino XML graph. ",
-            STRCT_XPATH_STR),
-        base::stderr())
-    base::stop(message)
+    futile.logger::flog.debug(
+        "Reading arc category table at '%s'... ",
+        ARC_CATEGORY_TABLE_FILE_PATH_STR)
+
+    # TODO: value of stringsAsFactors?
+    # TODO: robustness improvements?
+    ARC_CATEGORY_DT <-
+        data.table::fread(
+            encoding='UTF-8',
+            header=TRUE,
+            input=ARC_CATEGORY_TABLE_FILE_PATH_STR,
+            sep='\t',
+            stringsAsFactors=TRUE)
+
+    return(ARC_CATEGORY_DT)
 }
 
-strct_nodeset_of_xml_doc <- function(XML_DOC=NULL)
-    base::tryCatch(
-        base::list(
-            xml2::xml_find_all(
-                XML_DOC,
-                xpath=STRCT_XPATH_STR)),
-        error=strct_nodeset_of_xml_doc_error,
-        warning=strct_nodeset_of_xml_doc_error)
+strct_calculate_arc_category_prior_probability <- function(
+    ARC_CATEGORY_DT)
+    base::log(1.0 / base::nrow(ARC_CATEGORY_DT))
 
-strct_arc_d_f_of_node <- function(CHILD_NODE=NULL, ARC_CATEGORIES=NULL) {
+#' To read arc category tables
+#'
+#' @param ARC_CATEGORIES_CVEC The names used to identitify the arc categories, for which trails may be extracted by \code{\link{extract_features}}.
+#' @param ARC_CATEGORY_FILES_NAMES_REX_STR A \emph{PCRE} regular expression that exclusively matches the arc category table files.
+#' @param ARC_CATEGORY_TABLES_DIR_PATH A \code{\link{FilesystemPath}} to the directory containing an arc category table file for each arc category in \code{ARC_CATEGORIES_CVEC}.
+#' @return \code{ARC_CATEGORIES} See: \code{\link{ArcCategories}}.
+#' @export
+strct_read_arc_category_tables <- function(
+    ARC_CATEGORIES_CVEC,
+    ARC_CATEGORY_FILES_NAMES_REX_STR='^arc_category_(\\w+).tsv$',
+    ARC_CATEGORY_TABLES_DIR_PATH) {
+
+    ARC_CATEGORY_TABLES_FILES_PATHS_CVEC <-
+        base::normalizePath(
+            base::list.files(
+                full.names=TRUE,
+                no..=TRUE,
+                all.files=FALSE,
+                recursive=FALSE,
+                path=ARC_CATEGORY_TABLES_DIR_PATH,
+                pattern=ARC_CATEGORY_FILES_NAMES_REX_STR),
+        mustWork=TRUE)
+    ARC_CATEGORIES_CVEC_LENGTH_I <-
+        base::length(ARC_CATEGORIES_CVEC)
+    ARC_CATEGORY_TABLES_FILES_PATHS_CVEC_LENGTH_I <-
+        base::length(ARC_CATEGORY_TABLES_FILES_PATHS_CVEC)
+    if (ARC_CATEGORIES_CVEC_LENGTH_I != ARC_CATEGORY_TABLES_FILES_PATHS_CVEC_LENGTH_I) {
+        base::stop(
+            futile.logger::flog.error(
+                'Could not locate the implied number of arc category table files: %d were requested, but %d were found. ',
+                ARC_CATEGORIES_CVEC_LENGTH_I,
+                ARC_CATEGORY_TABLES_FILES_PATHS_CVEC_LENGTH_I))
+    } else {
+        arc_category_dt_lst <-
+            base::lapply(
+                ARC_CATEGORY_TABLES_FILES_PATHS_CVEC,
+                FUN=strct_read_arc_category_table)
+
+        base::names(arc_category_dt_lst) <-
+            ARC_CATEGORIES_CVEC
+        PRIOR_PROBABILITY_DVEC <-
+            base::vapply(
+                arc_category_dt_lst,
+                FUN=strct_calculate_arc_category_prior_probability,
+                FUN.VALUE=base::double(length=1L),
+                USE.NAMES=TRUE)
+
+        ARC_CATEGORIES <-
+            ArcCategories(
+                DT_LST=arc_category_dt_lst,
+                PRIOR_PROBABILITY_DVEC=PRIOR_PROBABILITY_DVEC)
+        return(ARC_CATEGORIES)
+    }
+}
+
+strct_nodeset_of_XML_document_error <- function(
+    CONDITION)
+    base::stop(
+        futile.logger::flog.fatal(
+            'An error occurred during extraction of the STRCT nodeset from an XML document. '))
+
+strct_nodeset_of_XML_document <- function(
+    XML_DOCUMENT,
+    XPATH_STR) {
+
+    base::tryCatch({
+            NODESET <-
+                xml2::xml_find_all(
+                    x=XML_DOCUMENT,
+                    xpath=XPATH_STR)
+            base::stopifnot(
+                base::length(NODESET) > 0L)
+            NODESET },
+        error=strct_nodeset_of_XML_document_error,
+        warning=strct_nodeset_of_XML_document_error)
+}
+
+strct_arcs_dt_of_node <- function(
+    CHILD_NODE,
+    ARC_CATEGORIES) {
+
     PARENT_NODE <-
         xml2::xml_parent(CHILD_NODE)
     PARENT_ID_I <-
@@ -51,119 +125,108 @@ strct_arc_d_f_of_node <- function(CHILD_NODE=NULL, ARC_CATEGORIES=NULL) {
     arc_categories_cvec <-
         base::names(arc_labels_cvec)
 
-    arc_scores_dvec <-
+    arcs_scores_dvec <-
         ARC_CATEGORIES@PRIOR_PROBABILITY_DVEC[
             arc_categories_cvec]
 
-    base::names(arc_scores_dvec) <-
+    base::names(arcs_scores_dvec) <-
         stringi::stri_join(arc_categories_cvec, arc_labels_cvec, sep='_')
 
-    ARC_LST <-
+    ARCS_LST <-
         base::c(
             parent_id=PARENT_ID_I,
             child_id=CHILD_ID_I,
-            base::as.list(arc_scores_dvec))
+            base::as.list(arcs_scores_dvec))
 
-    # TODO: (efficiency)
-    return(base::list(dplyr::as_data_frame(ARC_LST)))
+    return(ARCS_LST)
 }
 
-strct_arcs_d_f_of_nodeset_lst <- function(NODESET_LST=NULL, ARC_CATEGORIES=NULL) {
+strct_arcs_dt_of_nodeset_lst <- function(
+    NODESET_LST,
+    FEATURE_REPRESENTATION) {
+
     NODESET <-
-        base::unlist(NODESET_LST,
+        base::unlist(
+            NODESET_LST,
             recursive=FALSE,
             use.names=FALSE)
-    # TODO: (efficiency) much time is spent here, instead create a list.
-    arcs_d_f <-
-        dplyr::arrange(
-            dplyr::bind_rows(
-                base::vapply(
-                    NODESET,
-                    FUN=strct_arc_d_f_of_node,
-                    ARC_CATEGORIES=ARC_CATEGORIES,
-                    FUN.VALUE=TEMPLATES_1_LST)),
-            parent_id,
-            child_id)
 
-    ## Logarithmic weights. Assume a prior probability 1.0 (log(1) == 0.0) means 'no observation' to induce matrix sparsity. This does limit representable arc label categories to those with more than one possible arc label.
-    arcs_d_f[base::is.na(arcs_d_f)] <- 0.0
+    ARCS_LST <-
+        base::lapply(
+            NODESET,
+            strct_arcs_dt_of_node,
+            ARC_CATEGORIES=FEATURE_REPRESENTATION@ARC_CATEGORIES)
 
-    return(arcs_d_f)
-}
+    arcs_dt <- data.table::rbindlist(ARCS_LST, fill=TRUE, use.names=TRUE)
 
-strct_write_sequence_counts <- function(ALPINO_XML_DOC_LST=NULL, ARC_CATEGORIES=NULL, N=NULL, OUTPUT_DIR_PATH_STR=NULL, SENTENCE_COLLAPSING_FML_INDEX_I=NULL) {
-    # TODO: make n_strides_to_take & n_iterations parameters.
-    check_args(fun=strct_write_sequence_counts)
-
-    GRAPHVIZ_FILE_PATH_STR <-
-        base::file.path(
-            OUTPUT_DIR_PATH_STR,
-            base::sprintf('%d.gv',
-                SENTENCE_COLLAPSING_FML_INDEX_I))
-
-    SRILM_COUNTS_FILE_PATH_STR <-
-        base::file.path(
-            OUTPUT_DIR_PATH_STR,
-            base::sprintf('%d.%s',
-                SENTENCE_COLLAPSING_FML_INDEX_I,
-                STRCT_COUNTS_FILE_NAME_EXTENSION_STR))
-
-    if (!base::file.exists(GRAPHVIZ_FILE_PATH_STR) ||
-        !base::file.exists(SRILM_COUNTS_FILE_PATH_STR)) {
-        # TODO: refactor?
-        NODESET_LST <-
-            base::vapply(
-                ALPINO_XML_DOC_LST,
-                FUN=strct_nodeset_of_xml_doc,
-                FUN.VALUE=TEMPLATES_1_LST,
-                USE.NAMES=FALSE)
-
-        ARCS_D_F <-
-            strct_arcs_d_f_of_nodeset_lst(
-                NODESET_LST=NODESET_LST,
-                ARC_CATEGORIES=ARC_CATEGORIES)
-
-        ARCS_D_F_NROW_I <- base::nrow(ARCS_D_F)
-        base::message(
-            base::sprintf(
-                "Counting arc label subsequences among %d arcs, based on walks of length %d ... ",
-                ARCS_D_F_NROW_I,
-                N))
-
-        ## Arcs scores matrix, each row represents an arc.
-        # TODO: use sparse matrix.
-        arcs_scores_dmat <- base::as.matrix(ARCS_D_F[, -c(1L, 2L)])
-
-        enumerate_random_trails_on_linguistic_network(
-            arcs_list_df=ARCS_D_F,
-            arcs_scores_dmat=arcs_scores_dmat,
-            n_strides_to_take=N,
-            N=N,
-            is_all_ngrams_up_to_n=TRUE,
-            n_iterations=base::nrow(ARCS_D_F) * N,
-            GraphViz_file_path=GRAPHVIZ_FILE_PATH_STR,
-            SRILM_counts_file_path=SRILM_COUNTS_FILE_PATH_STR)
+    ## Logarithmic weights. Assume a prior probability of 1.0 (log(1.0) == 0.0)
+    ## means 'no observation' to induce matrix sparsity. This does limit representable arc
+    ## label categories to those with more than one possible arc label.
+    for (COLUMN_INDEX_I in base::seq_along(arcs_dt)) {
+        data.table::set(
+            arcs_dt,
+            i=base::which(base::is.na(arcs_dt[[COLUMN_INDEX_I]])),
+            j=COLUMN_INDEX_I,
+            value=0.0)
     }
 
-    return(SRILM_COUNTS_FILE_PATH_STR)
+    return(arcs_dt)
 }
 
-strct_extract <- function(
-    ALPINO_XML_DOC_LST=NULL, ARC_CATEGORIES=NULL, N=NULL, OUTPUT_DIR_PATH_STR=NULL, SENTENCE_COLLAPSING_FML_INDEX_I=NULL, SRILM_PARAMETERS=NULL) {
-    check_args(fun=strct_extract)
+#' @importFrom Rcpp evalCpp
+#' @useDynLib feat
+strct_write_sequence_counts <- function(
+    DOCUMENT_FILE_PATHS_CVEC,
+    FEATURES_EXTRACTION_PARAMETERS,
+    FEATURE_REPRESENTATION,
+    OBJECT_ID_I,
+    OBJECT_OUTPUT_DIR_PATH_STR) {
 
-    SRILM_COUNTS_FILE_PATH_STR <-
-        strct_write_sequence_counts(
-            ALPINO_XML_DOC_LST=ALPINO_XML_DOC_LST,
-            ARC_CATEGORIES=ARC_CATEGORIES,
-            N=N,
-            OUTPUT_DIR_PATH_STR=OUTPUT_DIR_PATH_STR,
-            SENTENCE_COLLAPSING_FML_INDEX_I=SENTENCE_COLLAPSING_FML_INDEX_I)
+    COUNTS_FILE_PATH_STR <-
+        base::file.path(
+            OBJECT_OUTPUT_DIR_PATH_STR,
+            base::sprintf('%s.counts',
+                FEATURE_REPRESENTATION@NAME_STR))
 
-    COUNTS_AND_LM <-
-        SRILM_write_ARPA_language_model(
-            COUNTS_FILE_PATH_STR=SRILM_COUNTS_FILE_PATH_STR,
-            PARAMETERS=SRILM_PARAMETERS)
+    if (!base::file.exists(COUNTS_FILE_PATH_STR)) {
+        XML_DOCUMENTS_LST <-
+            base::lapply(
+                DOCUMENT_FILE_PATHS_CVEC,
+                xml2::read_xml)
+        NODESET_LST <-
+            base::lapply(
+                XML_DOCUMENTS_LST,
+                strct_nodeset_of_XML_document,
+                XPATH_STR=FEATURE_REPRESENTATION@XPATH_STR)
 
-    return(COUNTS_AND_LM)
+        ARCS_DT <-
+            strct_arcs_dt_of_nodeset_lst(
+                NODESET_LST=NODESET_LST,
+                FEATURE_REPRESENTATION=FEATURE_REPRESENTATION)
+        ARCS_DT_NROW_I <- base::nrow(ARCS_DT)
+
+        futile.logger::flog.debug(
+            "Accumulating %d-grams in random trails sought in linguistic network of %d arcs with %d possible arc labels ... ",
+            FEATURE_REPRESENTATION@N_I,
+            ARCS_DT_NROW_I,
+            base::ncol(ARCS_DT))
+        GRAPHVIZ_FILE_PATH_STR <-
+            base::file.path(
+                OBJECT_OUTPUT_DIR_PATH_STR,
+                base::sprintf('%s.gv',
+                    FEATURE_REPRESENTATION@NAME_STR))
+        search_random_trails_in_linguistic_network(
+            arcs_df=ARCS_DT,
+            n_strides_to_take=FEATURE_REPRESENTATION@N_STRIDES_TO_TAKE_I,
+            N=FEATURE_REPRESENTATION@N_I,
+            is_all_ngrams_up_to_n=FEATURE_REPRESENTATION@IS_ALL_NGRAMS_UP_TO_N,
+            n_iterations=(ARCS_DT_NROW_I * FEATURE_REPRESENTATION@SCALE_ITERATIONS_I),
+            GraphViz_file_path=GRAPHVIZ_FILE_PATH_STR,
+            SRILM_counts_file_path=COUNTS_FILE_PATH_STR)
+    } else {
+        futile.logger::flog.debug(
+            'Reusing counts file. ')
+    }
+
+    return(COUNTS_FILE_PATH_STR)
 }

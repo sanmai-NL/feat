@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>Index. feat 0.2.0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">feat 0.2.0</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <div class="row">
+  <div class="span8">
+    Extracts from a collection of XML-encoded documents a (sparse)
+design matrix with variables for each observed surface (word n-grams) and
+structural feature of an objects. Objects can be represented by one or more
+observations (rows) in an annotations table. Such objects can f.i. represent
+text segments or single sentences, linguistic sentence graph (e.g., a syntax
+tree). The structural feature representation of objects, linguistic networks,
+are unions of the XML documents. These unions are multidigraphs with arcs
+labeled with attribute (name, value) pairs of elements. For example, arcs can
+be considered labeled with linguistic dependency relations between words in the
+syntax tree. Trails in these linguistic networks are randomly sampled, and then
+treated as sequences of arcs from parent to child elements, from which n-grams
+can be extracted as well.
+
+    <h2>Help topics</h2>
+
+    <h3></h3>
+    
+    
+    <ul class="index">
+        
+      <li>
+        <code><a href="Annotations-class.html">Annotations-class</a></code>(Annotations)<br />An annotations table.</li>
+            
+      <li>
+        <code><a href="ArcCategories-class.html">ArcCategories-class</a></code>(ArcCategories)<br />A set of arc category sets</li>
+            
+      <li>
+        <code><a href="extract_features.html">extract_features</a></code>(extract_features,SrfFeatureRepresentation,FeaturesExtractionParameters,integer,character,character-method, extract_features,StrctFeatureRepresentation,FeaturesExtractionParameters,integer,character,character-method)<br />To extract features of an object</li>
+            
+      <li>
+        <code><a href="FeatureRepresentation-class.html">FeatureRepresentation-class</a></code>(FeatureRepresentation)<br />A virtual class for feature representations</li>
+            
+      <li>
+        <code><a href="FeaturesExtractionParameters-class.html">FeaturesExtractionParameters-class</a></code>(FeaturesExtractionParameters)<br />Parameters of the feature extraction job</li>
+            
+      <li>
+        <code><a href="FilesystemPath-class.html">FilesystemPath-class</a></code>(FilesystemPath)<br />A string representing a filesystem path</li>
+            
+      <li>
+        <code><a href="metadata_read_annotations_table.html">metadata_read_annotations_table</a></code><br />To read an annotations table template</li>
+            
+      <li>
+        <code><a href="metadata_verify_annotation_table_consistency.html">metadata_verify_annotation_table_consistency</a></code><br />To verify an annotations table template</li>
+            
+      <li>
+        <code><a href="metadata_write_annotations_table_template.html">metadata_write_annotations_table_template</a></code><br />To write an annotations table template</li>
+            
+      <li>
+        <code><a href="objects_process_collection.html">objects_process_collection</a></code><br />To process all objects in a collection with one or more feature representations</li>
+            
+      <li>
+        <code><a href="objects_process_object.html">objects_process_object</a></code><br />To process an object</li>
+            
+      <li>
+        <code><a href="objects_process_with_feature_representation.html">objects_process_with_feature_representation</a></code><br />To process objects according to a feature representation (performs filesystem output)</li>
+            
+      <li>
+        <code><a href="objects_read_or_process_with_feature_representation.html">objects_read_or_process_with_feature_representation</a></code><br />To process objects according to a feature representation (performs filesystem input)</li>
+            
+      <li>
+        <code><a href="SrfFeatureRepresentation-class.html">SrfFeatureRepresentation-class</a></code>(SrfFeatureRepresentation)<br />Surface ('SRF') feature representation</li>
+            
+      <li>
+        <code><a href="StrctFeatureRepresentation-class.html">StrctFeatureRepresentation-class</a></code>(StrctFeatureRepresentation)<br />Structural ('STRCT') feature representation</li>
+            
+      <li>
+        <code><a href="strct_read_arc_category_tables.html">strct_read_arc_category_tables</a></code><br />To read arc category tables</li>
+    
+    </ul>
+  </div>
+  
+  <div class="span3 offset1">
+        
+    <h2>Dependencies</h2>
+    <ul>
+      <li><strong>Depends</strong>: data.table, data.table</li>
+      <li><strong>Imports</strong>: digest, digest, futile.logger, futile.logger, methods, stringi, stringi, Matrix, Matrix, Rcpp, Rcpp, xml2, xml2</li>
+      <li><strong>Suggests</strong>: testthat</li>
+      
+    </ul>
+    <h2>Authors</h2>
+    <ul>
+      <li><a href="mailto:S.N.Maijers+R-feat@gmail.com">Sander Maijers</a> [aut, cre]</li>
+    </ul>
+
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

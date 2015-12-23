@@ -17,3 +17,4 @@ vignettes/*.pdf
 *.o
 *.a
 *.so
+*.dwo

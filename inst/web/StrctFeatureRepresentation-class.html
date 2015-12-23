@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>StrctFeatureRepresentation-class. feat 0.2.0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">feat 0.2.0</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Structural ('STRCT') feature representation</h1>
+
+<div class="row">
+  <div class="span8">
+        
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Structural ('STRCT') feature representation</p>
+  
+    </div>
+
+    <div class="Slots">
+      <h2>Slots</h2>
+
+      <p></p>
+  
+      <p><dl>
+<dt><code>ARC_CATEGORIES</code></dt><dd><em>private</em> <a href='ArcCategories-class.html'>ArcCategories</a> read based on <code>ARC_CATEGORIES_CVEC</code> and <code>ARC_CATEGORY_TABLES_DIR_PATH</code>.</dd></p>
+  
+      <p><dt><code>IS_ALL_NGRAMS_UP_TO_N</code></dt><dd>Extract all $n$-grams with $n \in \{1,...,N\}$? If false, extract all $N$-grams with $N=$<code>N_I</code>.</dd></p>
+  
+      <p><dt><code>NAME_STR</code></dt><dd><em>private</em> <code>'STRCT'</code>.</dd></p>
+  
+      <p><dt><code>N_I</code></dt><dd>A scalar integer $N$.</dd></p>
+  
+      <p><dt><code>N_STRIDES_TO_TAKE_I</code></dt><dd>How long should trails be, at most? If the current arc in the current trail goes out to a terminal vertex yet has not reached this length, the trail is accumulated as is.</dd></p>
+  
+      <p><dt><code>SCALE_ITERATIONS_I</code></dt><dd>The weight to scale the number of iterations taken for random sampling of trails in a linguistic network by, a multiplier of the number of arcs in the network.</dd></p>
+  
+      <p><dt><code>SRILM_NGRAMCOUNT_PARAMETERS_CVEC</code></dt><dd>Extra command line parameters to SRILM <em>ngram-count</em>. This utility is run to extract features.</dd></p>
+  
+      <p><dt><code>SRILM_NGRAM_PARAMETERS_CVEC</code></dt><dd>Extra command line parameters to SRILM <em>ngram</em>. This utility is run to calculate feature scores.</dd></p>
+  
+      <p><dt><code>XPATH_STR</code></dt><dd><em>XPath</em> expression used to extract the surface strings in the XML documents that represent observations. It ought to point to a text node, and must be written in a syntax version supported by <em>libxml2</em>.</dd></p>
+  
+      <p></dl></p>
+  
+    </div>
+      </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>StrctFeatureRepresentation</li><li>StrctFeatureRepresentation-class</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>
