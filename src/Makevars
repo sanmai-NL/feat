@@ -1,1 +1,4 @@
-CXX_STD=CXX11
+CXX_STD = CXX11
+PKG_CXXFLAGS += -std=c++14
+#-UNDEBUG
+PKG_CPPFLAGS += -I../inst/include/

@@ -13,15 +13,15 @@ Structural ('STRCT') feature representation
 \describe{
 \item{\code{ARC_CATEGORIES}}{\emph{private} \link{ArcCategories} read based on \code{ARC_CATEGORIES_CVEC} and \code{ARC_CATEGORY_TABLES_DIR_PATH}.}
 
-\item{\code{IS_ALL_NGRAMS_UP_TO_N}}{Extract all \eqn{n}-grams with \eqn{n \in \{1,...,N\}}? If false, extract all \eqn{N}-grams with \eqn{N=}\code{N_I}.}
+\item{\code{ALL_NGRAMS_UP_TO_N_I_B}}{Extract all \eqn{n}-grams with \eqn{n \in \{1,...,N\}}? If false, extract all \eqn{N}-grams with \eqn{N=}\code{N_I}.}
 
 \item{\code{NAME_STR}}{\emph{private} \code{'STRCT'}.}
 
 \item{\code{N_I}}{A scalar integer \eqn{N}.}
 
-\item{\code{N_STRIDES_TO_TAKE_I}}{How long should trails be, at most? If the current arc in the current trail goes out to a terminal vertex yet has not reached this length, the trail is accumulated as is.}
+\item{\code{M_I}}{How long should trails be, at most? If the current arc in the current trail goes out to a terminal vertex yet has not reached this length, the trail is accumulated as is.}
 
-\item{\code{SCALE_ITERATIONS_I}}{The weight to scale the number of iterations taken for random sampling of trails in a linguistic network by, a multiplier of the number of arcs in the network.}
+\item{\code{I_I}}{The weight to scale the number of iterations taken for random sampling of trails in a linguistic network by, a multiplier of the number of arcs in the network.}
 
 \item{\code{SRILM_NGRAMCOUNT_PARAMETERS_CVEC}}{Extra command line parameters to SRILM \emph{ngram-count}. This utility is run to extract features.}
 

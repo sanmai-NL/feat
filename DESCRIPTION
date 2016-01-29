@@ -7,8 +7,11 @@ Depends:
     R (< 4.0.0),
     R (>= 3.2.1),
     data.table (< 2.0.0),
-    data.table (>= 1.9.7)
+    data.table (>= 1.9.7),
+    methods
 Imports:
+    data.table (< 2.0.0),
+    data.table (>= 1.9.7),
     digest (< 0.7.0),
     digest (>= 0.6.8),
     futile.logger (< 2.0.0),
@@ -18,25 +21,26 @@ Imports:
     stringi (>= 1.0),
     Matrix (< 2.0),
     Matrix (>= 1.2),
+    rARPACK (>= 0.9),
+    rARPACK (<= 1.0),
     Rcpp (>= 0.12.2),
     Rcpp (< 1.0.0),
     xml2 (< 2.0.0),
     xml2 (>= 0.1.2)
-Description: Extracts from a collection of XML-encoded documents a (sparse)
-    design matrix with variables for each observed surface (word n-grams) and
-    structural feature of an objects. Objects can be represented by one or more
-    observations (rows) in an annotations table. Such objects can f.i. represent
-    text segments or single sentences, linguistic sentence graph (e.g., a syntax
-    tree). The structural feature representation of objects, linguistic networks,
-    are unions of the XML documents. These unions are multidigraphs with arcs
-    labeled with attribute (name, value) pairs of elements. For example, arcs can
-    be considered labeled with linguistic dependency relations between words in the
-    syntax tree. Trails in these linguistic networks are randomly sampled, and then
-    treated as sequences of arcs from parent to child elements, from which n-grams
-    can be extracted as well.
+Description: Extracts from a collection of XML trees a (sparse) design matrix
+    with variables for linguistic surface (word n-grams) and/or structural features (syntactic
+    trails) of textual objects. Objects are specified with one or more observations (rows)
+    in an annotations table. Such objects can f.i. be text segments or single sentences, provided
+    that they can be extracted from some XML document based on an XPath. The structural
+    feature representation developed in this package, linguistic networks, are graph unions of those XML trees.
+    The unions are multidigraphs with arcs labeled with attribute (name, value) pairs of elements. For example,
+    given dependency tree encoded as XML, arcs can be considered labeled
+    with linguistic dependency relations between words in the syntax tree. Trails in
+    these linguistic networks are randomly sampled, and finally treated as sequences of
+    arcs from parent to child elements, from which n-grams can be extracted as well.
 LazyData: true
 License: CC0
-LinkingTo: BH (>= 1.58.0), Rcpp (>= 0.12.2)
+LinkingTo: BH (>= 1.60.0), Rcpp (>= 0.12.2)
 NeedsCompilation: yes
 OS_type: unix
 Package: feat
@@ -45,13 +49,14 @@ Suggests:
     testthat
 Title: Extract (Linguistic) Structural and Surface Features from XML Documents
 URL: https://github.com/sanmai-NL/feat
-Version: 0.2.0
+Version: 0.2.1
 RoxygenNote: 5.0.1
 Collate:
     'Annotations-class.R'
     'ArcCategories-class.R'
     'FilesystemPath-class.R'
     'CountsAndLM-class.R'
+    'DesignMatrix-class.R'
     'FeatureRepresentation-class.R'
     'FeaturesExtractionParameters-class.R'
     'RcppExports.R'

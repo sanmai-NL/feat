@@ -1,4 +1,3 @@
-# FilesystemPath <-
 #' A string representing a filesystem path
 #'
 #' @export FilesystemPath

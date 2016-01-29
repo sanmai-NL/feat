@@ -1,9 +1,14 @@
+# TODO: do not import all of 'methods'
 #' @include extract_features-generic.R SrfFeatureRepresentation-class.R SrfFeatureRepresentation-class.R
-#' @importFrom methods setMethod
+#' @import methods
+#' @importFrom methods setMethod new
 NULL
 
+DUMMY_OBJECT_FEATURES_DVEC <- 0.0
+base::names(DUMMY_OBJECT_FEATURES_DVEC) <- ''
+
 # TODO: Use list of FilesystemPaths instead of CVECs.
-# TODO: Solve bug upstream in roxygen2, cannot use namespaced call methods::setMethod.
+# TODO: Solve bug upstream in roxygen2: cannot use namespaced call methods::setMethod.
 ## Extract the surface (SRF) features of an object.
 #' @keywords methods
 #' @concept surface
@@ -61,7 +66,8 @@ function(
     OBJECT_FEATURES_DVEC <-
         SRILM_read_or_extract_features_vector(
             COUNTS_AND_LM=COUNTS_AND_LM,
-            SRILM_NGRAM_PARAMETERS_CVEC=object@SRILM_NGRAM_PARAMETERS_CVEC)
+            SRILM_NGRAM_PARAMETERS_CVEC=object@SRILM_NGRAM_PARAMETERS_CVEC,
+            SCORING_STR=object@SCORING_STR)
 
     return(OBJECT_FEATURES_DVEC)
 })
@@ -98,14 +104,17 @@ function(
             FEATURE_REPRESENTATION=object,
             OBJECT_ID_I=OBJECT_ID_I,
             OBJECT_OUTPUT_DIR_PATH_STR=OBJECT_OUTPUT_DIR_PATH_STR)
-    COUNTS_AND_LM <-
-        SRILM_write_ARPA_language_model(
-            COUNTS_FILE_PATH_STR=OBJECT_COUNTS_FILE_PATH_STR,
-            SRILM_NGRAMCOUNT_PARAMETERS_CVEC=object@SRILM_NGRAMCOUNT_PARAMETERS_CVEC)
     OBJECT_FEATURES_DVEC <-
-        SRILM_read_or_extract_features_vector(
-            COUNTS_AND_LM=COUNTS_AND_LM,
-            SRILM_NGRAM_PARAMETERS_CVEC=object@SRILM_NGRAM_PARAMETERS_CVEC)
-
+        if (!(base::is.null(OBJECT_COUNTS_FILE_PATH_STR))) {
+            COUNTS_AND_LM <-
+                SRILM_write_ARPA_language_model(
+                    COUNTS_FILE_PATH_STR=OBJECT_COUNTS_FILE_PATH_STR,
+                    SRILM_NGRAMCOUNT_PARAMETERS_CVEC=object@SRILM_NGRAMCOUNT_PARAMETERS_CVEC)
+            SRILM_read_or_extract_features_vector(
+                COUNTS_AND_LM=COUNTS_AND_LM,
+                SRILM_NGRAM_PARAMETERS_CVEC=object@SRILM_NGRAM_PARAMETERS_CVEC,
+                SCORING_STR=object@SCORING_STR)
+        } else DUMMY_OBJECT_FEATURES_DVEC
+    # TODO: warn about DUMMY_OBJECT_FEATURES_DVEC
     return(OBJECT_FEATURES_DVEC)
 })

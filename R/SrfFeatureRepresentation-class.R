@@ -17,14 +17,18 @@ SrfFeatureRepresentation <-
     methods::setClass(
         Class='SrfFeatureRepresentation',
         slots=base::list(
+            DESIGN_MATRIX_FACTORIZATION_RANK_FRACTION_D='numeric',
             N_I='integer',
             OBJECT_SEPARATOR_STR='character',
+            SCORING_STR='character',
             SRILM_NGRAMCOUNT_PARAMETERS_CVEC='character',
             SRILM_NGRAM_PARAMETERS_CVEC='character',
             XPATH_STR='character'),
         prototype=base::list(
+            DESIGN_MATRIX_FACTORIZATION_RANK_FRACTION_D=NULL,
             N_I=NULL,
             OBJECT_SEPARATOR_STR=NULL,
+            SCORING_STR=NULL,
             SRILM_NGRAMCOUNT_PARAMETERS_CVEC=NULL,
             SRILM_NGRAM_PARAMETERS_CVEC=NULL,
             XPATH_STR=NULL,

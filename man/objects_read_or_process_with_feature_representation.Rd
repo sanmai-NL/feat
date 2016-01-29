@@ -2,7 +2,7 @@
 % Please edit documentation in R/objects.R
 \name{objects_read_or_process_with_feature_representation}
 \alias{objects_read_or_process_with_feature_representation}
-\title{To process objects according to a feature representation (performs filesystem input)}
+\title{To process objects according to a feature representation}
 \usage{
 objects_read_or_process_with_feature_representation(FEATURE_REPRESENTATION, DT,
   FEATURES_EXTRACTION_PARAMETERS)
@@ -15,10 +15,10 @@ objects_read_or_process_with_feature_representation(FEATURE_REPRESENTATION, DT,
 \item{FEATURES_EXTRACTION_PARAMETERS}{See: \code{\link{FeaturesExtractionParameters}}.}
 }
 \value{
-\code{DESIGN_DMAT} See: \code{\link{objects_process_with_feature_representation}}.
+\code{DESIGN_MATRIX} See: \code{\link{DesignMatrix}}.
 }
 \description{
-To process objects according to a feature representation (performs filesystem input)
+\emph{This function performs filesystem input. }
 }
 \keyword{file}
 

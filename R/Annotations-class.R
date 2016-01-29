@@ -1,7 +1,6 @@
-# ' @exportClass Annotations
 # TODO: validate
 # TODO: R 3.2.1 bug does not allow exportClass
-#' An annotations table.
+#' An annotations table
 #'
 #' This table (in TSV format) must at minimum contain SHA256 hash values in column \emph{SHA256_value} and file paths relative to a single documents root directory that point to XML documents in column \emph{relative_file_paths}.
 #'

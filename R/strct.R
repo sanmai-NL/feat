@@ -4,7 +4,7 @@ strct_read_arc_category_table <- function(
     ARC_CATEGORY_TABLE_FILE_PATH_STR) {
 
     futile.logger::flog.debug(
-        "Reading arc category table at '%s'... ",
+        "Reading arc category table at '%s' ... ",
         ARC_CATEGORY_TABLE_FILE_PATH_STR)
 
     # TODO: value of stringsAsFactors?
@@ -22,7 +22,7 @@ strct_read_arc_category_table <- function(
 
 strct_calculate_arc_category_prior_probability <- function(
     ARC_CATEGORY_DT)
-    base::log(1.0 / base::nrow(ARC_CATEGORY_DT))
+    1.0 / base::nrow(ARC_CATEGORY_DT)
 
 #' To read arc category tables
 #'
@@ -68,7 +68,7 @@ strct_read_arc_category_tables <- function(
             base::vapply(
                 arc_category_dt_lst,
                 FUN=strct_calculate_arc_category_prior_probability,
-                FUN.VALUE=base::double(length=1L),
+                FUN.VALUE=base::numeric(length=1L),
                 USE.NAMES=TRUE)
 
         ARC_CATEGORIES <-
@@ -130,7 +130,10 @@ strct_arcs_dt_of_node <- function(
             arc_categories_cvec]
 
     base::names(arcs_scores_dvec) <-
-        stringi::stri_join(arc_categories_cvec, arc_labels_cvec, sep='_')
+        stringi::stri_join(
+            arc_categories_cvec,
+            arc_labels_cvec,
+            sep='_')
 
     ARCS_LST <-
         base::c(
@@ -215,14 +218,29 @@ strct_write_sequence_counts <- function(
                 OBJECT_OUTPUT_DIR_PATH_STR,
                 base::sprintf('%s.gv',
                     FEATURE_REPRESENTATION@NAME_STR))
-        search_random_trails_in_linguistic_network(
-            arcs_df=ARCS_DT,
-            n_strides_to_take=FEATURE_REPRESENTATION@N_STRIDES_TO_TAKE_I,
-            N=FEATURE_REPRESENTATION@N_I,
-            is_all_ngrams_up_to_n=FEATURE_REPRESENTATION@IS_ALL_NGRAMS_UP_TO_N,
-            n_iterations=(ARCS_DT_NROW_I * FEATURE_REPRESENTATION@SCALE_ITERATIONS_I),
-            GraphViz_file_path=GRAPHVIZ_FILE_PATH_STR,
-            SRILM_counts_file_path=COUNTS_FILE_PATH_STR)
+        USE_BOOLEAN_INSTEAD_OF_REAL_SCORING_B <-
+            if (FEATURE_REPRESENTATION@SCORING_STR == 'boolean') TRUE
+            else if (FEATURE_REPRESENTATION@SCORING_STR == 'Pr') FALSE
+            else NULL
+        COUNTS_FILE_PATH_STR <-
+            base::tryCatch({
+                search_random_trails_in_linguistic_network(
+                    arcs_df=ARCS_DT,
+                    M=FEATURE_REPRESENTATION@M_I,
+                    N=FEATURE_REPRESENTATION@N_I,
+                    is_all_ngrams_up_to_n=FEATURE_REPRESENTATION@ALL_NGRAMS_UP_TO_N_I_B,
+                    I=ARCS_DT_NROW_I * FEATURE_REPRESENTATION@I_I,
+                    use_boolean_instead_of_real_scoring=USE_BOOLEAN_INSTEAD_OF_REAL_SCORING_B,
+                    GraphViz_file_path=GRAPHVIZ_FILE_PATH_STR,
+                    SRILM_counts_file_path=COUNTS_FILE_PATH_STR)
+                COUNTS_FILE_PATH_STR
+            },
+            error=function(CONDITION) {
+                futile.logger::flog.error(
+                    'search_random_trails_in_linguistic_network raised an exception: "%s". Suggestion: %s',
+                    CONDITION,
+                    'The linguistic network is too small to extract STRCT features given the parameters you specified. ')
+                return(NULL) })
     } else {
         futile.logger::flog.debug(
             'Reusing counts file. ')

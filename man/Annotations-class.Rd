@@ -4,7 +4,7 @@
 \name{Annotations-class}
 \alias{Annotations}
 \alias{Annotations-class}
-\title{An annotations table.}
+\title{An annotations table}
 \description{
 This table (in TSV format) must at minimum contain SHA256 hash values in column \emph{SHA256_value} and file paths relative to a single documents root directory that point to XML documents in column \emph{relative_file_paths}.
 }

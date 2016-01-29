@@ -32,7 +32,7 @@ extract_features(object, FEATURES_EXTRACTION_PARAMETERS, OBJECT_ID_I,
 \item{RELATIVE_FILE_PATHS_CVEC}{The file paths relative to the documents root directory that collectively represent the object.}
 }
 \value{
-\code{OBJECT_FEATURES_DVEC} Object features.
+\code{OBJECT_FEATURES_DVEC} Object features. May be \code{DUMMY_OBJECT_FEATURES_DVEC}, a single zero score for the feature named after the empty string. This is the case when from one or more objects no structural features could be extracted given the feature representation parameters.
 }
 \description{
 Extracts features of an object given a feature representation.

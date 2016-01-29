@@ -15,7 +15,7 @@ objects_process_collection(DT, FEATURES_EXTRACTION_PARAMETERS,
 \item{FEATURE_REPRESENTATIONS_LST}{See: \code{\link{SrfFeatureRepresentation}}, \code{\link{StrctFeatureRepresentation}}.}
 }
 \value{
-The \code{DESIGN_DMAT} or design matrix with feature scores, with objects as rows indexed by their \emph{object_ID} and named columns as features.
+\code{DESIGN_MATRIX_LST} A list of \code{\link{DesignMatrix}} objects.
 }
 \description{
 To process all objects in a collection with one or more feature representations

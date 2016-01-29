@@ -5,19 +5,19 @@
 \title{To process objects according to a feature representation (performs filesystem output)}
 \usage{
 objects_process_with_feature_representation(FEATURE_REPRESENTATION,
-  DESIGN_DMAT_FILE_PATH_STR, DT, FEATURES_EXTRACTION_PARAMETERS)
+  DESIGN_MATRIX_FILE_PATH_STR, DT, FEATURES_EXTRACTION_PARAMETERS)
 }
 \arguments{
 \item{FEATURE_REPRESENTATION}{See: \code{\link{FeatureRepresentation}}.}
 
-\item{DESIGN_DMAT_FILE_PATH_STR}{The file path at which to write the design matrix RDS file.}
+\item{DESIGN_MATRIX_FILE_PATH_STR}{The path at which to write the design matrix RDS file.}
 
 \item{DT}{The annotations table as a \code{\link[data.table]{data.table}}. See: \code{\link{Annotations}}.}
 
 \item{FEATURES_EXTRACTION_PARAMETERS}{See: \code{\link{FeaturesExtractionParameters}}.}
 }
 \value{
-\code{DESIGN_DMAT} A design matrix with feature scores, with objects as rows indexed by their \emph{object_ID} and named columns as features.
+\code{DESIGN_MATRIX} See \code{\link{objects_read_or_process_with_feature_representation}}.
 }
 \description{
 To process objects according to a feature representation (performs filesystem output)

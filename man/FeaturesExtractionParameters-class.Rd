@@ -4,9 +4,9 @@
 \name{FeaturesExtractionParameters-class}
 \alias{FeaturesExtractionParameters}
 \alias{FeaturesExtractionParameters-class}
-\title{Parameters of the feature extraction job}
+\title{Parameters of the features extraction job}
 \description{
-Parameters of the feature extraction job
+Parameters of the features extraction job
 }
 \section{Slots}{
 
